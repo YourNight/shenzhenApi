@@ -22,7 +22,7 @@ public class RestfulApi {
     public String hello(@PathVariable String thing){
         System.out.println("url:"+url);
         for (String fileName : fileNames) {
-            System.out.println("fileName"+fileName);
+            System.out.println("fileName:"+fileName);
         }
         return thing;
     }
