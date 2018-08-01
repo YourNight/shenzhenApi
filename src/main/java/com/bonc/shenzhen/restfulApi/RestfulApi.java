@@ -1,10 +1,13 @@
 package com.bonc.shenzhen.restfulApi;
 
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
 
 /**
  * Created by liuhaolong on 2018/8/1.
@@ -18,12 +21,15 @@ public class RestfulApi {
     @Value("${file.name}")
     String[] fileNames;
 
-    @RequestMapping(value = "/hello/{thing}",method = RequestMethod.GET)
+    @RequestMapping(value = "/hello/{thing}",method = {RequestMethod.GET,RequestMethod.POST})
     public String hello(@PathVariable String thing){
+        System.out.println(thing);
+        HashMap<String, Object> hashMap = new HashMap<>();
         System.out.println("url:"+url);
         for (String fileName : fileNames) {
             System.out.println("fileName:"+fileName);
+            hashMap.put(fileName,fileName);
         }
-        return thing;
+        return JSONObject.fromObject(hashMap).toString();
     }
 }
