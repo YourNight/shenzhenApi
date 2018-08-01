@@ -20,9 +20,9 @@ public class RestfulApi {
 
     @RequestMapping(value = "/hello/{thing}",method = RequestMethod.GET)
     public String hello(@PathVariable String thing){
-        System.out.println(url);
+        System.out.println("url:"+url);
         for (String fileName : fileNames) {
-            System.out.println(fileName);
+            System.out.println("fileName"+fileName);
         }
         return thing;
     }
