@@ -10,8 +10,12 @@ import java.util.zip.ZipInputStream;
  */
 public class UnZip {
     public void test() {
-        String zip = "C:\\Users\\BONC\\Desktop\\新建文件夹\\Cloud_httpservice.cn-shanghai-hg-d01.odps.bigdata.customs.gov.cnapi_80_hjc - 副本.zip";
-        String input = "C:\\Users\\BONC\\Desktop\\新建文件夹";
+
+    }
+
+    public static void main(String[] args) {
+        String zip = "C:\\Users\\BONC\\Desktop\\018950\\脚本\\脚本.zip";
+        String input = "C:\\Users\\BONC\\Desktop\\018950\\脚本\\脚本";
         unzip(zip,input);
     }
 
