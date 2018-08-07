@@ -156,7 +156,7 @@ public class JsonReader {
                     JSONObject column = JSONObject.fromObject(columnObj);
                     for (Map map : columnList) {
                         String desColumn = map.get("desColumn").toString();//前一个节点的outputname
-                        if (desColumn.equals(column.getString("inputName").toUpperCase())) {//如果前一个节点的outputname和此次的inputname相同
+                        if (desColumn.equals(column.get("inputName")!=null?column.get("inputName").toString().toUpperCase():"")) {//如果前一个节点的outputname和此次的inputname相同
 //                            map.put("desColumn", column.getString("outputName"));//重新将desColumn设置为此次的outputname
                             Object config = column.get("expressionConfig");//获取表达式对象
                             Map calcRule = (Map) map.get("calcRule");

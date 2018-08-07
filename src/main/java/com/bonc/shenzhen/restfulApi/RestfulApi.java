@@ -33,10 +33,6 @@ public class RestfulApi {
         System.out.println(thing);
         HashMap<String, Object> hashMap = new HashMap<>();
         System.out.println("url:"+url);
-        for (String fileName : fileNames) {
-            System.out.println("fileName:"+fileName);
-            hashMap.put(fileName,fileName);
-        }
         return JSONObject.fromObject(hashMap).toString();
     }
 
@@ -56,13 +52,16 @@ public class RestfulApi {
 
                 List<JSONObject> postParams = JsonReader.getPostParams(json);
                 for (JSONObject postParam : postParams) {
-                    String result = Httppost.doPost(saveMetaRelationsUrl, postParam);
-                    JSONObject resultJson = JSONObject.fromObject(result);
-                    if (Integer.parseInt(resultJson.get("returnStatus").toString())==200){
-                        continue;
-                    }
+//                    String result = Httppost.doPost(saveMetaRelationsUrl, postParam);
+//                    JSONObject resultJson = JSONObject.fromObject(result);
+//                    if (Integer.parseInt(resultJson.get("returnStatus").toString())==200){
+//                        continue;
+//                    }
+                    logger.info(postParam);
                 }
             }catch (Exception e){
+                logger.error(e.getMessage());
+                e.printStackTrace();
                 continue;
             }
         }
