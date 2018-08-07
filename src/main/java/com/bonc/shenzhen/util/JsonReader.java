@@ -56,16 +56,21 @@ public class JsonReader {
 
 
         JSONObject targetJson = nodesMap.get(targetId);
-        String targetTableName = targetJson.getString("table");
+        String targetTableName = targetJson.get("modelName").toString();
+        // Todo  源表和目标表
 //        JSONObject sourceTableCodes = getSourceTableCode(nodesMap, sourceTablesId);
 //        JSONObject targetTableCode = getTargetTableCode(targetTableName);
 
         for (Object o : sourceTablesId) {
             Map<String, Object> params = new HashMap<>();
             String id = o.toString();
+            JSONObject tableMetaData = nodesMap.get(id);
+            String dataSourceId = tableMetaData.getString("dataSourceId");//华为数据库资源id   用来查询数据库名和schema
+            // todo 加入源表id
 //            params.put("desEntityId",targetTableCode.get(targetResourceCode+"-"+targetResourceSchema+"-"+targetTableName).toString());
             params.put("desEntityCode",targetTableName);
-            String tableName = nodesMap.get(id).getString("table");
+            String tableName = tableMetaData.get("modelName").toString();//当前表名
+            // TODO 加入目标表id
 //            params.put("srcEntityId",sourceTableCodes.get(resourceCode+"-"+resourceSchema+"-"+tableName).toString());
             params.put("srcEntityCode",tableName);
             params.put("systemId","");
@@ -104,7 +109,9 @@ public class JsonReader {
         for (Object o : sourceTablesId) {
             Map<String, Object> params = new HashMap<>();
             String id = o.toString();
-            String sourceTableName = nodesMap.get(id).getString("table");
+            JSONObject tableJson = nodesMap.get(id);
+
+            String sourceTableName = tableJson.get("modelName").toString();
             params.put("tableCode",sourceTableName);
             params.put("schema",resourceSchema);
             params.put("resourceCode",resourceCode);
@@ -255,7 +262,7 @@ public class JsonReader {
         int i= 1;
         for (Object columnObj : columns) {
             JSONObject column = JSONObject.fromObject(columnObj);
-            String columnName = column.get("inputName").toString().toUpperCase();
+            String columnName = column.get("outputName").toString().toUpperCase();
             enumMap.put(columnName,i+"");
             i++;
         }
@@ -322,7 +329,8 @@ public class JsonReader {
     }
 
     public static void main(String[] args) {
-        getPostParams(getJson("C:/Users/BONC/Desktop/018950/7c132565-8eb3-41da-b2e6-6d3e0690ba7c.json"));
+//        getPostParams(getJson("C:/Users/BONC/Desktop/018950/7c132565-8eb3-41da-b2e6-6d3e0690ba7c.json"));
 //        System.out.println(getJson("C:/Users/BONC/Desktop/018950/log.txt"));
+        System.out.println(ClassLoader.getSystemResource(""));
     }
 }

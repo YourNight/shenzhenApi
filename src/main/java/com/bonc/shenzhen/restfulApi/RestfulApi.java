@@ -2,13 +2,16 @@ package com.bonc.shenzhen.restfulApi;
 
 import com.bonc.shenzhen.util.Httppost;
 import com.bonc.shenzhen.util.JsonReader;
+import com.bonc.shenzhen.util.UnZip;
 import net.sf.json.JSONObject;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,11 +21,9 @@ import java.util.List;
 @RestController
 public class RestfulApi {
 
+    private static Logger logger = Logger.getLogger(RestfulApi.class);
     @Value("${file.url}")
     String url;
-
-    @Value("${file.name}")
-    String[] fileNames;
 
     @Value("${config.saveMetaRelationsUrl}")
     String saveMetaRelationsUrl;
@@ -40,16 +41,31 @@ public class RestfulApi {
     }
 
     @RequestMapping(value = "/saveMetaRelation")
-    public String saveMetaRelation(){
+    public String saveMetaRelation(HttpServletRequest request){
         System.out.println(saveMetaRelationsUrl);
-//        List<JSONObject> postParams = JsonReader.getPostParams(null);
-//        for (JSONObject postParam : postParams) {
-//            String result = Httppost.doPost(saveMetaRelationsUrl, postParam);
-//            JSONObject resultJson = JSONObject.fromObject(result);
-//            if (Integer.parseInt(resultJson.get("returnStatus").toString())==200){
-//                continue;
-//            }
-//        }
-        return "success";
+        String path = request.getServletContext().getRealPath("/");
+        path = path.replaceAll("\\\\", "/");
+        System.out.println(path);
+
+        logger.info(path);
+        System.out.println(request.getContextPath());
+        System.out.println(request.getRequestURI());
+        List<JSONObject> jsonList = UnZip.unzip(url);
+        for (JSONObject json : jsonList) {
+            try {
+
+                List<JSONObject> postParams = JsonReader.getPostParams(json);
+                for (JSONObject postParam : postParams) {
+                    String result = Httppost.doPost(saveMetaRelationsUrl, postParam);
+                    JSONObject resultJson = JSONObject.fromObject(result);
+                    if (Integer.parseInt(resultJson.get("returnStatus").toString())==200){
+                        continue;
+                    }
+                }
+            }catch (Exception e){
+                continue;
+            }
+        }
+        return jsonList.toString();
     }
 }

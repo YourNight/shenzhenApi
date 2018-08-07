@@ -1,5 +1,7 @@
 package com.bonc.shenzhen.util;
 
+import org.hibernate.validator.internal.util.privilegedactions.GetMethod;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -17,6 +19,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.Map;
+
+import static jdk.nashorn.tools.Shell.SUCCESS;
 
 /**
  * Java原生的API可用于发送HTTP请求，即java.net.URL、java.net.URLConnection，这些API很好用、很常用，
@@ -68,7 +72,8 @@ public class HttpDownload {
 
             BufferedInputStream bin = new BufferedInputStream(httpURLConnection.getInputStream());
 
-            String path = downloadDir + File.separatorChar + fileFullName;
+            String path = downloadDir  + fileFullName;
+//            String path = downloadDir + File.separatorChar + fileFullName;
             file = new File(path);
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
@@ -97,11 +102,10 @@ public class HttpDownload {
         }
 
     }
-
     public static void main(String[] args) {
 
         // 下载文件测试
-        downloadFile("http://localhost:8080/images/1467523487190.png", "/Users/H__D/Desktop");
+        downloadFile("http://172.16.74.74:8080/restApi/Koala.jpg", "C:/Users/BONC/AppData/Local/Temp/tomcat-docbase.6673209967711873770.8080/");
 
     }
 
