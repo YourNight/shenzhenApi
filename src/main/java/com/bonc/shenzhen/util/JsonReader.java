@@ -15,14 +15,7 @@ public class JsonReader {
 
     @Value("${config.entityTableCodeUrl}")
     static String entityTableCodeUrl;
-    @Value("${config.resourceCode}")
-    static String resourceCode;
-    @Value("${config.resourceSchema}")
-    static String resourceSchema;
-    @Value("${config.targetResourceCode}")
-    static String targetResourceCode;
-    @Value("${config.targetResourceSchema}")
-    static String targetResourceSchema;
+
 
     public static List<JSONObject> getPostParams(JSONObject jsonStr){
         List<JSONObject> paramsList = new ArrayList<>();
@@ -87,12 +80,17 @@ public class JsonReader {
 
     }
 
-    public static JSONObject getTargetTableCode( String targetTableName) {
+    /**
+     * 获取目标表在数据治理平台的id
+     * @param targetTableName
+     * @return
+     */
+    private static JSONObject getTargetTableCode( String targetTableName) {
         List<Map> paramsList = new ArrayList<>();
         Map<String, Object> params = new HashMap<>();
         params.put("tableCode",targetTableName);
-        params.put("schema",targetResourceSchema);
-        params.put("resourceCode",targetResourceCode);
+        params.put("schema","");
+        params.put("resourceCode","");
         paramsList.add(params);
         JSONObject targetTableCode = null;
         try {
@@ -104,7 +102,13 @@ public class JsonReader {
         return targetTableCode;
     }
 
-    public static JSONObject getSourceTableCode(Map<String, JSONObject> nodesMap, Set sourceTablesId) {
+    /**
+     * 获取源表在治理平台的id集合
+     * @param nodesMap
+     * @param sourceTablesId
+     * @return
+     */
+    private static JSONObject getSourceTableCode(Map<String, JSONObject> nodesMap, Set sourceTablesId) {
         List<Map> paramsList = new ArrayList<>();
         for (Object o : sourceTablesId) {
             Map<String, Object> params = new HashMap<>();
@@ -113,8 +117,8 @@ public class JsonReader {
 
             String sourceTableName = tableJson.get("modelName").toString();
             params.put("tableCode",sourceTableName);
-            params.put("schema",resourceSchema);
-            params.put("resourceCode",resourceCode);
+            params.put("schema","");
+            params.put("resourceCode","");
             paramsList.add(params);
         }
         JSONObject sourceTableCodes = null;
@@ -137,7 +141,7 @@ public class JsonReader {
      * @param columnList 存放所有列处理的List
      * @return List<Map> 返回metaRelDetails
      */
-    public static List<Map> getMetaRelDetails(String id,Map<String,String> relationMap,Map<String,JSONObject> nodeMap ,Map<String,String> enumMap,List<Map> columnList){
+    private static List<Map> getMetaRelDetails(String id,Map<String,String> relationMap,Map<String,JSONObject> nodeMap ,Map<String,String> enumMap,List<Map> columnList){
         if (columnList==null){
             columnList = new ArrayList<Map>();
         }
@@ -217,7 +221,7 @@ public class JsonReader {
      * @param workflowNode 工作流节点
      * @return
      */
-    public static Map<String, String> getRelationMap(JSONObject workflowNode){
+    private static Map<String, String> getRelationMap(JSONObject workflowNode){
         //获取节点关系
         JSONArray edges = JSONArray.fromObject(workflowNode.get("edges"));
         //  将节点关系存到map中
@@ -237,7 +241,7 @@ public class JsonReader {
      * @param workflowNode 工作流节点
      * @return
      */
-    public static Map<String,JSONObject> getNodeMap(JSONObject workflowNode){
+    private static Map<String,JSONObject> getNodeMap(JSONObject workflowNode){
         JSONArray nodesList = JSONArray.fromObject(workflowNode.get("nodes"));//所有节点存放的List
         Map<String,JSONObject> nodesMap = new HashMap<>();//将节点List转为节点Map,便于使用get(id),key为id
         for (Object nodeStr : nodesList) {
@@ -255,7 +259,7 @@ public class JsonReader {
      * @param nodeMap 所有节点map
      * @return
      */
-    public static Map<String,String> getEnumMap(String id,Map<String,JSONObject> nodeMap){
+    private static Map<String,String> getEnumMap(String id,Map<String,JSONObject> nodeMap){
         Map<String, String> enumMap = new HashMap<>();
         JSONObject metadata = nodeMap.get(id);
         JSONArray columns = JSONArray.fromObject(metadata.get("columns"));
@@ -274,7 +278,7 @@ public class JsonReader {
      * @param relationMap
      * @return
      */
-    public static Map<String, Set> getTableIds(Map<String, String> relationMap){
+    private static Map<String, Set> getTableIds(Map<String, String> relationMap){
         Map<String, Set> tablesMap = new HashMap<>();
         Set<String> sourceIds = null;// 存放所有sourceid
         Set<String> targetIds = new HashSet<>();// 存放所有targetid
@@ -302,12 +306,12 @@ public class JsonReader {
      * @param delSet 需要删除的数据
      * @return
      */
-    public static Set getDifferent(Set<String> baseSet,Set<String> delSet){
+    private static Set getDifferent(Set<String> baseSet,Set<String> delSet){
         baseSet.removeAll(delSet);
         return baseSet;
     }
 
-    public static JSONObject getJson(String path){
+    private static JSONObject getJson(String path){
         JSONObject jsonFrom = null;
         try {
             String str = "";

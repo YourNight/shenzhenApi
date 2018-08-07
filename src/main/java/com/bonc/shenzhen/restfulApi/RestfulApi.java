@@ -2,7 +2,8 @@ package com.bonc.shenzhen.restfulApi;
 
 import com.bonc.shenzhen.util.Httppost;
 import com.bonc.shenzhen.util.JsonReader;
-import com.bonc.shenzhen.util.UnZip;
+import com.bonc.shenzhen.util.UnZipFromPath;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -46,25 +48,34 @@ public class RestfulApi {
         logger.info(path);
         System.out.println(request.getContextPath());
         System.out.println(request.getRequestURI());
-        List<JSONObject> jsonList = UnZip.unzip(url);
+        List<JSONObject> jsonList = UnZipFromPath.unzip(url);
+        List<JSONObject> saveMetaRelationParamsList = new ArrayList<>();
         for (JSONObject json : jsonList) {
             try {
 
                 List<JSONObject> postParams = JsonReader.getPostParams(json);
+                saveMetaRelationParamsList.addAll(postParams);
                 for (JSONObject postParam : postParams) {
 //                    String result = Httppost.doPost(saveMetaRelationsUrl, postParam);
 //                    JSONObject resultJson = JSONObject.fromObject(result);
 //                    if (Integer.parseInt(resultJson.get("returnStatus").toString())==200){
 //                        continue;
 //                    }
-                    logger.info(postParam);
+//                    logger.info(postParam);
                 }
             }catch (Exception e){
-                logger.error(e.getMessage());
+                logger.error(e.getLocalizedMessage());
                 e.printStackTrace();
                 continue;
             }
         }
-        return jsonList.toString();
+            logger.info(saveMetaRelationParamsList);
+        String result = null;
+        try {
+            result = Httppost.doPost(saveMetaRelationsUrl, JSONArray.fromObject(saveMetaRelationParamsList).toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }
