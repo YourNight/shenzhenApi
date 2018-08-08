@@ -44,8 +44,7 @@ public class RestfulApi {
     public String hello(@PathVariable String thing) {
         System.out.println(thing);
         HashMap<String, Object> hashMap = new HashMap<>();
-        System.out.println("url:" + url);
-        return JSONObject.fromObject(hashMap).toString();
+        return "you say :"+thing;
     }
 
     @RequestMapping(value = "/saveMetaRelation")
@@ -66,7 +65,7 @@ public class RestfulApi {
             for (JSONObject json : jsonList) {
                 try {
 
-                    List<JSONObject> postParams = JsonReader.getPostParams(json, dataSource, dataCollection);
+                    List<JSONObject> postParams = JsonReader.getPostParams(json, dataSource, dataCollection,tableCodes);
                     saveMetaRelationParamsList.addAll(postParams);
                     for (JSONObject postParam : postParams) {
 //                    String result = Httppost.doPost(saveMetaRelationsUrl, postParam);

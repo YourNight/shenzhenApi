@@ -17,7 +17,7 @@ public class JsonReader {
     static String entityTableCodeUrl;
 
 
-    public static List<JSONObject> getPostParams(JSONObject jsonStr,JSONArray dataSource,JSONArray dataCollection){
+    public static List<JSONObject> getPostParams(JSONObject jsonStr,JSONArray dataSource,JSONArray dataCollection,JSONObject tableCodes){
         List<JSONObject> paramsList = new ArrayList<>();
         //获取工作流节点
         JSONObject workflowNode = JSONObject.fromObject(jsonStr.get("workflowNode"));
@@ -65,14 +65,14 @@ public class JsonReader {
 
             // TODO 加入目标表id
 
-            params.put("desEntityId",targetTableCode.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName).toString());
+            params.put("desEntityId",tableCodes.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName).toString());
             params.put("desEntityCode",targetTableName);
             // todo 加入源表id
             String tableName = tableMetaData.get("modelName").toString();//当前表名
             String schema = getSchema(dataCollection, tableName, dataSourceId);//源表当前schema
             String resourceCode = getResourceCode(dataSource, tableName);
 
-            params.put("srcEntityId",sourceTableCodes.get(resourceCode+"-"+schema+"-"+tableName).toString());
+            params.put("srcEntityId",tableCodes.get(resourceCode+"-"+schema+"-"+tableName).toString());
             params.put("srcEntityCode",tableName);
             params.put("systemId","");
             params.put("processId","");
