@@ -1,5 +1,6 @@
 package com.bonc.shenzhen.test1;
 
+import com.bonc.shenzhen.restfulApi.RestfulApi;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -16,6 +17,10 @@ public class Params {
         JSONArray jsonArray11 = null;
         JSONArray jsonArray1 = dataCollectionParse.parseJson();
         JSONArray jsonArray2 = parseDataSource.parseJson();
+
+        RestfulApi.setDataCollection(jsonArray1);
+        RestfulApi.setDataSource(jsonArray2);
+
         List<Object> list1 = new ArrayList<>();
 
 

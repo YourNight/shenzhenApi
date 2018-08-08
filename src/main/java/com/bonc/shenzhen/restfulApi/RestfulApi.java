@@ -1,5 +1,6 @@
 package com.bonc.shenzhen.restfulApi;
 
+import com.bonc.shenzhen.test1.Params;
 import com.bonc.shenzhen.test1.ParseDataSource;
 import com.bonc.shenzhen.util.Httppost;
 import com.bonc.shenzhen.util.JsonReader;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,9 +32,11 @@ public class RestfulApi {
 
     @Value("${config.saveMetaRelationsUrl}")
     String saveMetaRelationsUrl;
+    @Value("${config.entityTableCodeUrl}")
+    String entityTableCodeUrl;
 
-    JSONArray dataSource;
-    JSONArray dataCollection;
+    static JSONArray dataSource;
+    static JSONArray dataCollection;
 
     @RequestMapping(value = "/hello/{thing}",method = {RequestMethod.GET,RequestMethod.POST})
     public String hello(@PathVariable String thing){
@@ -55,6 +59,7 @@ public class RestfulApi {
 
 //        dataSource = new ParseDataSource().getJson();
 
+        if (dataSource==null||dataCollection==null) return "数据源信息为空，请先调用getEntityTableCodes接口";
 
         List<JSONObject> jsonList = UnZipFromPath.unzip(url);
         List<JSONObject> saveMetaRelationParamsList = new ArrayList<>();
@@ -85,5 +90,36 @@ public class RestfulApi {
             e.printStackTrace();
         }
         return result;
+    }
+
+    @RequestMapping("/getEntityTableCodes")
+    public String getparam() throws IOException {
+              Params params = new Params();
+               JSONArray anInterface = params.getInterface();
+               String s = JSONArray.fromObject(anInterface).toString();
+              logger.info("入参------>"+s);
+             String result = "";
+              try {
+                      result = Httppost.doPost(entityTableCodeUrl, s);
+                  } catch (Exception e) {
+                       e.printStackTrace();
+                   }
+               return result;
+           }
+
+    public JSONArray getDataSource() {
+        return dataSource;
+    }
+
+    public static void setDataSource(JSONArray dataSource) {
+        dataSource = dataSource;
+    }
+
+    public JSONArray getDataCollection() {
+        return dataCollection;
+    }
+
+    public static void setDataCollection(JSONArray dataCollection) {
+        dataCollection = dataCollection;
     }
 }
