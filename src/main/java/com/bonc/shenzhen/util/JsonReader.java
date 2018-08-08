@@ -70,7 +70,7 @@ public class JsonReader {
             // todo 加入源表id
             String tableName = tableMetaData.get("modelName").toString();//当前表名
             String schema = getSchema(dataCollection, tableName, dataSourceId);//源表当前schema
-            String resourceCode = getResourceCode(dataSource, tableName);
+            String resourceCode = getResourceCode(dataSource, dataSourceId);
 
             params.put("srcEntityId",tableCodes.get(resourceCode+"-"+schema+"-"+tableName).toString());
             params.put("srcEntityCode",tableName);
@@ -89,7 +89,13 @@ public class JsonReader {
     }
 
 
-
+    /**
+     * 通过databaseID和tableName来获取对应的Schema
+     * @param dataCollection 数据采集结果的集合
+     * @param tableName 表名
+     * @param dataSourceId 数据库资源id
+     * @return
+     */
     private static String getSchema(JSONArray dataCollection, String tableName, String dataSourceId) {
         String schema = "";
         for (Object o : dataCollection) {
@@ -103,6 +109,12 @@ public class JsonReader {
     }
 
 
+    /**
+     * 通过dataSourceId获取databaseCode
+     * @param dataSource 数据源集合
+     * @param dataSourceId 数据源id
+     * @return String
+     */
     private static String getResourceCode(JSONArray dataSource, String dataSourceId) {
         String dataSourceName = "";
         for (Object ds : dataSource) {
