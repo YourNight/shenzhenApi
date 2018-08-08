@@ -17,7 +17,7 @@ public class JsonReader {
     static String entityTableCodeUrl;
 
 
-    public static List<JSONObject> getPostParams(JSONObject jsonStr){
+    public static List<JSONObject> getPostParams(JSONObject jsonStr,JSONArray dataSource,JSONArray dataCollection){
         List<JSONObject> paramsList = new ArrayList<>();
         //获取工作流节点
         JSONObject workflowNode = JSONObject.fromObject(jsonStr.get("workflowNode"));
@@ -52,7 +52,7 @@ public class JsonReader {
         String targetTableName = targetJson.get("modelName").toString();
         // Todo  源表和目标表
 //        JSONObject sourceTableCodes = getSourceTableCode(nodesMap, sourceTablesId);
-//        JSONObject targetTableCode = getTargetTableCode(targetTableName);
+//        JSONObject targetTableCode = getTargetTableCode(targetJson);
 
         for (Object o : sourceTablesId) {
             Map<String, Object> params = new HashMap<>();
@@ -82,15 +82,19 @@ public class JsonReader {
 
     /**
      * 获取目标表在数据治理平台的id
-     * @param targetTableName
+     * @param targetJson
      * @return
      */
-    private static JSONObject getTargetTableCode( String targetTableName) {
+    private static JSONObject getTargetTableCode( JSONObject targetJson,JSONArray dataSource,JSONArray dataCollection) {
         List<Map> paramsList = new ArrayList<>();
         Map<String, Object> params = new HashMap<>();
+        String targetTableName = targetJson.get("modelName").toString();
+        String dataSourceId = targetJson.get("dataSourceId").toString();
+        String dataSourceName = getTableCode(dataSource, dataSourceId);
+        String schema = getSchema(dataCollection, targetTableName, dataSourceId);
         params.put("tableCode",targetTableName);
-        params.put("schema","");
-        params.put("resourceCode","");
+        params.put("schema",schema);
+        params.put("resourceCode",dataSourceName);
         paramsList.add(params);
         JSONObject targetTableCode = null;
         try {
@@ -102,13 +106,38 @@ public class JsonReader {
         return targetTableCode;
     }
 
+    private static String getSchema(JSONArray dataCollection, String tableName, String dataSourceId) {
+        String schema = "";
+        for (Object o : dataCollection) {
+            JSONObject data = JSONObject.fromObject(o);
+            if (dataSourceId.equals(data.get("sourceDataSourceId").toString())&&(tableName.equals(data.get("targetTable").toString())||tableName.equals(data.get("sourceTable").toString()))){
+                schema = data.get("sourceTableSchema").toString();
+                return schema;
+            }
+        }
+        return schema;
+    }
+
+
+    private static String getTableCode(JSONArray dataSource, String dataSourceId) {
+        String dataSourceName = "";
+        for (Object ds : dataSource) {
+            JSONObject database = JSONObject.fromObject(ds);
+            if (database.containsKey(dataSourceId)){
+                dataSourceName = database.get(dataSourceId).toString();
+                return dataSourceName;
+            }
+        }
+        return dataSourceName;
+    }
+
     /**
      * 获取源表在治理平台的id集合
      * @param nodesMap
      * @param sourceTablesId
      * @return
      */
-    private static JSONObject getSourceTableCode(Map<String, JSONObject> nodesMap, Set sourceTablesId) {
+    private static JSONObject getSourceTableCode(Map<String, JSONObject> nodesMap, Set sourceTablesId,JSONArray dataSource,JSONArray dataCollection) {
         List<Map> paramsList = new ArrayList<>();
         for (Object o : sourceTablesId) {
             Map<String, Object> params = new HashMap<>();
@@ -116,9 +145,13 @@ public class JsonReader {
             JSONObject tableJson = nodesMap.get(id);
 
             String sourceTableName = tableJson.get("modelName").toString();
+            String dataSourceId = tableJson.get("dataSourceId").toString();
+            String dataSourceName = getTableCode(dataSource, dataSourceId);
+            String schema = getSchema(dataCollection, sourceTableName, dataSourceId);
+
             params.put("tableCode",sourceTableName);
-            params.put("schema","");
-            params.put("resourceCode","");
+            params.put("schema",schema);
+            params.put("resourceCode",dataSourceName);
             paramsList.add(params);
         }
         JSONObject sourceTableCodes = null;
@@ -130,6 +163,7 @@ public class JsonReader {
         }
         return sourceTableCodes;
     }
+
 
 
     /**

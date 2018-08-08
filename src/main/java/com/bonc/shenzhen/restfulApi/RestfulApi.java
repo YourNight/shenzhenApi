@@ -1,5 +1,6 @@
 package com.bonc.shenzhen.restfulApi;
 
+import com.bonc.shenzhen.test1.ParseDataSource;
 import com.bonc.shenzhen.util.Httppost;
 import com.bonc.shenzhen.util.JsonReader;
 import com.bonc.shenzhen.util.UnZipFromPath;
@@ -30,6 +31,9 @@ public class RestfulApi {
     @Value("${config.saveMetaRelationsUrl}")
     String saveMetaRelationsUrl;
 
+    JSONArray dataSource;
+    JSONArray dataCollection;
+
     @RequestMapping(value = "/hello/{thing}",method = {RequestMethod.GET,RequestMethod.POST})
     public String hello(@PathVariable String thing){
         System.out.println(thing);
@@ -48,12 +52,16 @@ public class RestfulApi {
         logger.info(path);
         System.out.println(request.getContextPath());
         System.out.println(request.getRequestURI());
+
+//        dataSource = new ParseDataSource().getJson();
+
+
         List<JSONObject> jsonList = UnZipFromPath.unzip(url);
         List<JSONObject> saveMetaRelationParamsList = new ArrayList<>();
         for (JSONObject json : jsonList) {
             try {
 
-                List<JSONObject> postParams = JsonReader.getPostParams(json);
+                List<JSONObject> postParams = JsonReader.getPostParams(json,dataSource,dataCollection);
                 saveMetaRelationParamsList.addAll(postParams);
                 for (JSONObject postParam : postParams) {
 //                    String result = Httppost.doPost(saveMetaRelationsUrl, postParam);
