@@ -21,7 +21,7 @@ public class ParseDataCollection {
     GetAllFiles gal = new GetAllFiles();
     JSONArray json = null;
     static List<Object> list1 = new ArrayList<>();
-    String booldid=RestfulApi.result;
+    String booldid = RestfulApi.result;
 
     static List<Object> booldParamList;
 
@@ -82,7 +82,6 @@ public class ParseDataCollection {
         map.put("targetTable", TargetTable);
         map.put("sourceDataSourceId", sourceDataSourceId);
         map.put("sourceTableSchema", sourceTableSchema);
-        Map map4 = new HashMap();
         JSONArray jsonArray = jsonObject.getJSONArray("fieldMappings");
         List<Object> list3 = new ArrayList();
         for (int i = 0; i < jsonArray.size(); i++) {
@@ -104,23 +103,25 @@ public class ParseDataCollection {
             list3.add(map2);
         }
         JSONArray jsonArray1 = JSONArray.fromObject(booldid);
-        for (int j=0;j<jsonArray1.size();j++){
+        for (int j = 0; j < jsonArray1.size(); j++) {
+            Map map4 = new HashMap();
             JSONObject jsonObject1 = (JSONObject) jsonArray1.get(j);
-            String desId =jsonObject1.get("resourceCode-schema-tableCode").toString();
-            String srcId =jsonObject1.get("resourceCode-schema-tableCode").toString();
+            String resourceCode = jsonObject1.get("resourceCode").toString();
+            String schema = jsonObject1.get("schema").toString();
+            String desId = jsonObject1.get(resourceCode + "-" + schema + "-" + TargetTable).toString();
+            String srcId = jsonObject1.get(resourceCode + "-" + schema + "-" + SourceTable).toString();
+            map4.put("desEntityId", desId);
+            map4.put("desEntityCode", TargetTable);
+            map4.put("srcEntityId", srcId);
+            map4.put("srcEntityCode", SourceTable);
+            map4.put("systemId", "");
+            map4.put("processId", "");
+            map4.put("relationType", "0");
+            map4.put("tenantId", "");
+            map4.put("metaRelDetails", list3);
+            paramsList.add(map4);
         }
-
-        map4.put("desEntityId", "");
-        map4.put("desEntityCode", TargetTable);
-        map4.put("srcEntityId", "");
-        map4.put("srcEntityCode", SourceTable);
-        map4.put("systemId", "");
-        map4.put("processId", "");
-        map4.put("relationType", "0");
-        map4.put("tenantId", "");
-        map4.put("metaRelDetails", list3);
         list.add(map);
-        paramsList.add(map4);
         object = JSONArray.fromObject(list);
         System.out.println(object.toString());
         return object;
