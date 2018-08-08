@@ -1,6 +1,7 @@
 package com.bonc.shenzhen.restfulApi;
 
 import com.bonc.shenzhen.test1.Params;
+import com.bonc.shenzhen.test1.ParseDataCollection;
 import com.bonc.shenzhen.test1.ParseDataSource;
 import com.bonc.shenzhen.util.Httppost;
 import com.bonc.shenzhen.util.JsonReader;
@@ -35,56 +36,55 @@ public class RestfulApi {
     @Value("${config.entityTableCodeUrl}")
     String entityTableCodeUrl;
 
-    static JSONArray dataSource;
-    static JSONArray dataCollection;
+    public static JSONArray dataSource;
+    public static JSONArray dataCollection;
+    public static JSONObject tableCodes;
 
-    @RequestMapping(value = "/hello/{thing}",method = {RequestMethod.GET,RequestMethod.POST})
-    public String hello(@PathVariable String thing){
+    @RequestMapping(value = "/hello/{thing}", method = {RequestMethod.GET, RequestMethod.POST})
+    public String hello(@PathVariable String thing) {
         System.out.println(thing);
         HashMap<String, Object> hashMap = new HashMap<>();
-        System.out.println("url:"+url);
+        System.out.println("url:" + url);
         return JSONObject.fromObject(hashMap).toString();
     }
 
     @RequestMapping(value = "/saveMetaRelation")
-    public String saveMetaRelation(HttpServletRequest request){
-        System.out.println(saveMetaRelationsUrl);
-        String path = request.getServletContext().getRealPath("/");
-        path = path.replaceAll("\\\\", "/");
-        System.out.println(path);
-
-        logger.info(path);
-        System.out.println(request.getContextPath());
-        System.out.println(request.getRequestURI());
+    public String saveMetaRelation(HttpServletRequest request) {
 
 //        dataSource = new ParseDataSource().getJson();
 
-        if (dataSource==null||dataCollection==null) return "数据源信息为空，请先调用getEntityTableCodes接口";
+        String result = null;
+        try {
+            if (dataSource == null || dataCollection == null || tableCodes == null) {
+                Params params = new Params();
+                JSONArray anInterface = params.getInterface();
+                tableCodes = JSONObject.fromObject(Httppost.doPost(entityTableCodeUrl, anInterface.toString()));
+            }
 
-        List<JSONObject> jsonList = UnZipFromPath.unzip(url);
-        List<JSONObject> saveMetaRelationParamsList = new ArrayList<>();
-        for (JSONObject json : jsonList) {
-            try {
+            List<JSONObject> jsonList = UnZipFromPath.unzip(url);
+            List<JSONObject> saveMetaRelationParamsList = new ArrayList<>();
+            for (JSONObject json : jsonList) {
+                try {
 
-                List<JSONObject> postParams = JsonReader.getPostParams(json,dataSource,dataCollection);
-                saveMetaRelationParamsList.addAll(postParams);
-                for (JSONObject postParam : postParams) {
+                    List<JSONObject> postParams = JsonReader.getPostParams(json, dataSource, dataCollection);
+                    saveMetaRelationParamsList.addAll(postParams);
+                    for (JSONObject postParam : postParams) {
 //                    String result = Httppost.doPost(saveMetaRelationsUrl, postParam);
 //                    JSONObject resultJson = JSONObject.fromObject(result);
 //                    if (Integer.parseInt(resultJson.get("returnStatus").toString())==200){
 //                        continue;
 //                    }
 //                    logger.info(postParam);
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getLocalizedMessage());
+                    e.printStackTrace();
+                    continue;
                 }
-            }catch (Exception e){
-                logger.error(e.getLocalizedMessage());
-                e.printStackTrace();
-                continue;
             }
-        }
             logger.info(saveMetaRelationParamsList);
-        String result = null;
-        try {
+
+
             result = Httppost.doPost(saveMetaRelationsUrl, JSONArray.fromObject(saveMetaRelationParamsList).toString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,34 +92,37 @@ public class RestfulApi {
         return result;
     }
 
+    @RequestMapping("/sssss")
+    public String getBoold() {
+        try {
+            if (dataSource == null || dataCollection == null || tableCodes == null) {
+                Params params = new Params();
+                JSONArray anInterface = params.getInterface();
+                tableCodes = JSONObject.fromObject(Httppost.doPost(entityTableCodeUrl, anInterface.toString()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        JSONArray booldParam = ParseDataCollection.getBooldParam();
+
+        return booldParam.toString();
+    }
+
     @RequestMapping("/getEntityTableCodes")
     public String getparam() throws IOException {
-              Params params = new Params();
-               JSONArray anInterface = params.getInterface();
-               String s = JSONArray.fromObject(anInterface).toString();
-              logger.info("入参------>"+s);
-             String result = "";
-              try {
-                      result = Httppost.doPost(entityTableCodeUrl, s);
-                  } catch (Exception e) {
-                       e.printStackTrace();
-                   }
-               return result;
-           }
-
-    public JSONArray getDataSource() {
-        return dataSource;
+        Params params = new Params();
+        JSONArray anInterface = params.getInterface();
+        String s = JSONArray.fromObject(anInterface).toString();
+        logger.info("入参------>" + s);
+        String result = "";
+        try {
+//                      result = Httppost.doPost(entityTableCodeUrl, s);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
-    public static void setDataSource(JSONArray dataSource) {
-        dataSource = dataSource;
-    }
 
-    public JSONArray getDataCollection() {
-        return dataCollection;
-    }
-
-    public static void setDataCollection(JSONArray dataCollection) {
-        dataCollection = dataCollection;
-    }
 }

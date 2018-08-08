@@ -18,8 +18,8 @@ public class Params {
         JSONArray jsonArray1 = dataCollectionParse.parseJson();
         JSONArray jsonArray2 = parseDataSource.parseJson();
 
-        RestfulApi.setDataCollection(jsonArray1);
-        RestfulApi.setDataSource(jsonArray2);
+        RestfulApi.dataCollection=jsonArray1;
+        RestfulApi.dataSource=jsonArray2;
 
         List<Object> list1 = new ArrayList<>();
 

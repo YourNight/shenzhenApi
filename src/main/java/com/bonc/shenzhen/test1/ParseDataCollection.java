@@ -17,10 +17,10 @@ public class ParseDataCollection {
 
     GetAllFiles gal = new GetAllFiles();
     JSONArray json = null;
-    static List<Object> list = new ArrayList<>();
     static List<Object> list1 = new ArrayList<>();
-    List<Object> list2 = new ArrayList();
-    List<Object> list3 = new ArrayList();
+
+    static List<Object> booldParamList;
+
 
     public static void main(String[] args) throws IOException {
         JSONArray jsonArray1 = new ParseDataCollection().parseJson();
@@ -45,12 +45,15 @@ public class ParseDataCollection {
 //    @RequestMapping("/parseJson")
     public JSONArray parseJson() throws IOException {
         List<String> list2 = gal.getJsonFiles1();
+        List<Object> list = new ArrayList<>();
+        List<Object> paramsList = new ArrayList();
         for (String x : list2) {
             if (x.endsWith("DirMapping.json")) {
                 continue;
             }
-            json = getJson(x);
+            json = getJson(x,list,paramsList);
         }
+        booldParamList=paramsList;
         return json;
     }
 
@@ -60,7 +63,7 @@ public class ParseDataCollection {
      * @return: net.sf.json.JSONArray
      */
 
-    public JSONArray getJson(String path) throws IOException {
+    public JSONArray getJson(String path,List<Object> list,List<Object> paramsList ) throws IOException {
         JSONArray object = null;
         String str = "";
         FileInputStream fileInputStream = new FileInputStream(path);
@@ -76,14 +79,15 @@ public class ParseDataCollection {
         String sourceTableSchema = jsonObject.getString("sourceTableSchema");
 
         Map map = new HashMap<>();
-        Map map2 = new HashMap();
-        Map map3 = new HashMap();
-        Map map4 = new HashMap();
         map.put("sourceTable", SourceTable);
         map.put("targetTable", TargetTable);
         map.put("sourceDataSourceId", sourceDataSourceId);
         map.put("sourceTableSchema", sourceTableSchema);
+        Map map2 = new HashMap();
+        Map map3 = new HashMap();
+        Map map4 = new HashMap();
         JSONArray jsonArray = jsonObject.getJSONArray("fieldMappings");
+        List<Object> list3 = new ArrayList();
         for (int i = 0; i < jsonArray.size(); i++) {
             Object obj = jsonArray.get(i);
             JSONObject fieldMapping = JSONObject.fromObject(obj);
@@ -99,20 +103,24 @@ public class ParseDataCollection {
             map2.put("ruleType", "0");
             map2.put("calcRule", map3);
             list3.add(map2);
-            map4.put("desEntityId", "");
-            map4.put("desEntityCode", "");
-            map4.put("srcEntityId", "");
-            map4.put("srcEntityCode", "");
-            map4.put("systemId", "");
-            map4.put("processId", "");
-            map4.put("relationType", "0");
-            map4.put("tenantId", "");
-            map4.put("metaRelDetails", list2);
         }
+        map4.put("desEntityId", "");
+        map4.put("desEntityCode",TargetTable);
+        map4.put("srcEntityId", "");
+        map4.put("srcEntityCode",SourceTable);
+        map4.put("systemId", "");
+        map4.put("processId", "");
+        map4.put("relationType", "0");
+        map4.put("tenantId", "");
+        map4.put("metaRelDetails", list3);
         list.add(map);
-//        list.add(map4);
+        paramsList.add(map4);
         object = JSONArray.fromObject(list);
         System.out.println(object.toString());
         return object;
+    }
+
+    public static JSONArray getBooldParam(){
+        return JSONArray.fromObject(booldParamList);
     }
 }
