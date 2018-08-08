@@ -39,7 +39,6 @@ public class RestfulApi {
     public static JSONArray dataSource;
     public static JSONArray dataCollection;
     public static JSONObject tableCodes;
-    public static String  result;
 
     @RequestMapping(value = "/hello/{thing}", method = {RequestMethod.GET, RequestMethod.POST})
     public String hello(@PathVariable String thing) {

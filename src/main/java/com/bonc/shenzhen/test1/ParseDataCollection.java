@@ -21,7 +21,6 @@ public class ParseDataCollection {
     GetAllFiles gal = new GetAllFiles();
     JSONArray json = null;
     static List<Object> list1 = new ArrayList<>();
-    String booldid = RestfulApi.result;
 
     static List<Object> booldParamList;
 
@@ -74,14 +73,14 @@ public class ParseDataCollection {
         JSONObject jsonObject = JSONObject.fromObject(str);
         String SourceTable = jsonObject.getString("sourceTable");
         String TargetTable = jsonObject.getString("targetTable");
-        String sourceDataSourceId = jsonObject.getString("sourceDataSourceId");
-        String sourceTableSchema = jsonObject.getString("sourceTableSchema");
+        String resourceCode = jsonObject.getString("sourceDataSourceId");
+        String schema = jsonObject.getString("sourceTableSchema");
 
         Map map = new HashMap<>();
         map.put("sourceTable", SourceTable);
         map.put("targetTable", TargetTable);
-        map.put("sourceDataSourceId", sourceDataSourceId);
-        map.put("sourceTableSchema", sourceTableSchema);
+        map.put("sourceDataSourceId", resourceCode);
+        map.put("sourceTableSchema", schema);
         JSONArray jsonArray = jsonObject.getJSONArray("fieldMappings");
         List<Object> list3 = new ArrayList();
         for (int i = 0; i < jsonArray.size(); i++) {
@@ -102,25 +101,20 @@ public class ParseDataCollection {
             map2.put("calcRule", map3);
             list3.add(map2);
         }
-        JSONArray jsonArray1 = JSONArray.fromObject(booldid);
-        for (int j = 0; j < jsonArray1.size(); j++) {
-            Map map4 = new HashMap();
-            JSONObject jsonObject1 = (JSONObject) jsonArray1.get(j);
-            String resourceCode = jsonObject1.get("resourceCode").toString();
-            String schema = jsonObject1.get("schema").toString();
-            String desId = jsonObject1.get(resourceCode + "-" + schema + "-" + TargetTable).toString();
-            String srcId = jsonObject1.get(resourceCode + "-" + schema + "-" + SourceTable).toString();
-            map4.put("desEntityId", desId);
-            map4.put("desEntityCode", TargetTable);
-            map4.put("srcEntityId", srcId);
-            map4.put("srcEntityCode", SourceTable);
-            map4.put("systemId", "");
-            map4.put("processId", "");
-            map4.put("relationType", "0");
-            map4.put("tenantId", "");
-            map4.put("metaRelDetails", list3);
-            paramsList.add(map4);
-        }
+        Map map4 = new HashMap();
+        JSONObject jsonObject1 = RestfulApi.tableCodes;
+        String desId = jsonObject1.get(resourceCode + "-" + schema + "-" + TargetTable).toString();
+        String srcId = jsonObject1.get(resourceCode + "-" + schema + "-" + SourceTable).toString();
+        map4.put("desEntityId", desId);
+        map4.put("desEntityCode", TargetTable);
+        map4.put("srcEntityId", srcId);
+        map4.put("srcEntityCode", SourceTable);
+        map4.put("systemId", "");
+        map4.put("processId", "");
+        map4.put("relationType", "0");
+        map4.put("tenantId", "");
+        map4.put("metaRelDetails", list3);
+        paramsList.add(map4);
         list.add(map);
         object = JSONArray.fromObject(list);
         System.out.println(object.toString());
