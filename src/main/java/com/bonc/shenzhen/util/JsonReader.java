@@ -50,21 +50,29 @@ public class JsonReader {
 
         JSONObject targetJson = nodesMap.get(targetId);
         String targetTableName = targetJson.get("modelName").toString();
+        String targetDatasourceId = targetJson.get("dataSourceId").toString();
+        String targetSchema = getSchema(dataCollection, targetTableName, targetDatasourceId);
+        String targetDatasourceCode = getResourceCode(dataSource, targetDatasourceId);
         // Todo  源表和目标表
-//        JSONObject sourceTableCodes = getSourceTableCode(nodesMap, sourceTablesId);
-//        JSONObject targetTableCode = getTargetTableCode(targetJson);
+//        JSONObject sourceTableCodes = getSourceTableCode(nodesMap, sourceTablesId,dataSource,dataCollection);
+//        JSONObject targetTableCode = getTargetTableCode(targetJson,dataSource,dataCollection);
 
         for (Object o : sourceTablesId) {
             Map<String, Object> params = new HashMap<>();
             String id = o.toString();
             JSONObject tableMetaData = nodesMap.get(id);
             String dataSourceId = tableMetaData.getString("dataSourceId");//华为数据库资源id   用来查询数据库名和schema
-            // todo 加入源表id
-//            params.put("desEntityId",targetTableCode.get(targetResourceCode+"-"+targetResourceSchema+"-"+targetTableName).toString());
-            params.put("desEntityCode",targetTableName);
-            String tableName = tableMetaData.get("modelName").toString();//当前表名
+
             // TODO 加入目标表id
-//            params.put("srcEntityId",sourceTableCodes.get(resourceCode+"-"+resourceSchema+"-"+tableName).toString());
+
+            params.put("desEntityId",targetTableCode.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName).toString());
+            params.put("desEntityCode",targetTableName);
+            // todo 加入源表id
+            String tableName = tableMetaData.get("modelName").toString();//当前表名
+            String schema = getSchema(dataCollection, tableName, dataSourceId);//源表当前schema
+            String resourceCode = getResourceCode(dataSource, tableName);
+
+            params.put("srcEntityId",sourceTableCodes.get(resourceCode+"-"+schema+"-"+tableName).toString());
             params.put("srcEntityCode",tableName);
             params.put("systemId","");
             params.put("processId","");
@@ -80,31 +88,7 @@ public class JsonReader {
 
     }
 
-    /**
-     * 获取目标表在数据治理平台的id
-     * @param targetJson
-     * @return
-     */
-    private static JSONObject getTargetTableCode( JSONObject targetJson,JSONArray dataSource,JSONArray dataCollection) {
-        List<Map> paramsList = new ArrayList<>();
-        Map<String, Object> params = new HashMap<>();
-        String targetTableName = targetJson.get("modelName").toString();
-        String dataSourceId = targetJson.get("dataSourceId").toString();
-        String dataSourceName = getTableCode(dataSource, dataSourceId);
-        String schema = getSchema(dataCollection, targetTableName, dataSourceId);
-        params.put("tableCode",targetTableName);
-        params.put("schema",schema);
-        params.put("resourceCode",dataSourceName);
-        paramsList.add(params);
-        JSONObject targetTableCode = null;
-        try {
-            String targetTableCodeStr = Httppost.doPost(entityTableCodeUrl, JSONArray.fromObject(paramsList).toString());
-            targetTableCode = JSONObject.fromObject(targetTableCodeStr);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return targetTableCode;
-    }
+
 
     private static String getSchema(JSONArray dataCollection, String tableName, String dataSourceId) {
         String schema = "";
@@ -119,7 +103,7 @@ public class JsonReader {
     }
 
 
-    private static String getTableCode(JSONArray dataSource, String dataSourceId) {
+    private static String getResourceCode(JSONArray dataSource, String dataSourceId) {
         String dataSourceName = "";
         for (Object ds : dataSource) {
             JSONObject database = JSONObject.fromObject(ds);
@@ -129,6 +113,32 @@ public class JsonReader {
             }
         }
         return dataSourceName;
+    }
+
+    /**
+     * 获取目标表在数据治理平台的id
+     * @param targetJson
+     * @return
+     */
+    private static JSONObject getTargetTableCode( JSONObject targetJson,JSONArray dataSource,JSONArray dataCollection) {
+        List<Map> paramsList = new ArrayList<>();
+        Map<String, Object> params = new HashMap<>();
+        String targetTableName = targetJson.get("modelName").toString();
+        String dataSourceId = targetJson.get("dataSourceId").toString();
+        String dataSourceName = getResourceCode(dataSource, dataSourceId);
+        String schema = getSchema(dataCollection, targetTableName, dataSourceId);
+        params.put("tableCode",targetTableName);
+        params.put("schema",schema);
+        params.put("resourceCode",dataSourceName);
+        paramsList.add(params);
+        JSONObject targetTableCode = null;
+        try {
+            String targetTableCodeStr = Httppost.doPost(entityTableCodeUrl, JSONArray.fromObject(paramsList).toString());
+            targetTableCode = JSONObject.fromObject(targetTableCodeStr);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return targetTableCode;
     }
 
     /**
@@ -146,7 +156,7 @@ public class JsonReader {
 
             String sourceTableName = tableJson.get("modelName").toString();
             String dataSourceId = tableJson.get("dataSourceId").toString();
-            String dataSourceName = getTableCode(dataSource, dataSourceId);
+            String dataSourceName = getResourceCode(dataSource, dataSourceId);
             String schema = getSchema(dataCollection, sourceTableName, dataSourceId);
 
             params.put("tableCode",sourceTableName);
