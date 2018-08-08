@@ -15,6 +15,7 @@ public class ParseDataSource {
     JSONArray json = null;
 
     public static void main(String[] args) throws IOException {
+        test();
         JSONArray jsonArray = new ParseDataSource().parseJson();
         for (int j = 0; j < jsonArray.size(); j++) {
             Object o = jsonArray.get(j);
@@ -70,6 +71,12 @@ public class ParseDataSource {
         object = JSONArray.fromObject(list);
         System.out.println(object.toString());
         return object;
+    }
+
+    public static void test(){
+        String s = "{\"ORACLE_KF-DEV_MY200-PURE_ROLE\":\"1\",\"ORACLE_KF-DEV_MY200-PURE_USER\":\"2\"}";
+        JSONObject jsonObject = JSONObject.fromObject(s);
+        System.out.println( jsonObject+"@@@@@@@@@@@@@@@@@@@@@@@@");
     }
 }
 

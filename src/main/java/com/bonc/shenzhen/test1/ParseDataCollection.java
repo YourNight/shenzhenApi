@@ -1,5 +1,8 @@
 package com.bonc.shenzhen.test1;
 
+import com.bonc.shenzhen.restfulApi.RestfulApi;
+import jdk.nashorn.internal.scripts.JS;
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +21,9 @@ public class ParseDataCollection {
     GetAllFiles gal = new GetAllFiles();
     JSONArray json = null;
     static List<Object> list1 = new ArrayList<>();
+    String booldid=RestfulApi.result;
 
     static List<Object> booldParamList;
-
 
     public static void main(String[] args) throws IOException {
         JSONArray jsonArray1 = new ParseDataCollection().parseJson();
@@ -31,9 +34,6 @@ public class ParseDataCollection {
             String sourceTableSchema = jsonObject1.get("sourceTableSchema").toString();//schema
             System.out.println(s + "----------" + sourceTable + "---" + sourceTableSchema);
         }
-        /*for(int j=0;j<list2.size();j++){
-            System.out.println(list2.get(j));
-        }*/
     }
 
     /**
@@ -42,7 +42,6 @@ public class ParseDataCollection {
      * @return: net.sf.json.JSONArray
      */
 
-//    @RequestMapping("/parseJson")
     public JSONArray parseJson() throws IOException {
         List<String> list2 = gal.getJsonFiles1();
         List<Object> list = new ArrayList<>();
@@ -51,9 +50,9 @@ public class ParseDataCollection {
             if (x.endsWith("DirMapping.json")) {
                 continue;
             }
-            json = getJson(x,list,paramsList);
+            json = getJson(x, list, paramsList);
         }
-        booldParamList=paramsList;
+        booldParamList = paramsList;
         return json;
     }
 
@@ -63,7 +62,7 @@ public class ParseDataCollection {
      * @return: net.sf.json.JSONArray
      */
 
-    public JSONArray getJson(String path,List<Object> list,List<Object> paramsList ) throws IOException {
+    public JSONArray getJson(String path, List<Object> list, List<Object> paramsList) throws IOException {
         JSONArray object = null;
         String str = "";
         FileInputStream fileInputStream = new FileInputStream(path);
@@ -83,12 +82,12 @@ public class ParseDataCollection {
         map.put("targetTable", TargetTable);
         map.put("sourceDataSourceId", sourceDataSourceId);
         map.put("sourceTableSchema", sourceTableSchema);
-        Map map2 = new HashMap();
-        Map map3 = new HashMap();
         Map map4 = new HashMap();
         JSONArray jsonArray = jsonObject.getJSONArray("fieldMappings");
         List<Object> list3 = new ArrayList();
         for (int i = 0; i < jsonArray.size(); i++) {
+            Map map2 = new HashMap();
+            Map map3 = new HashMap();
             Object obj = jsonArray.get(i);
             JSONObject fieldMapping = JSONObject.fromObject(obj);
             String src = fieldMapping.get("sourceField").toString();
@@ -104,10 +103,17 @@ public class ParseDataCollection {
             map2.put("calcRule", map3);
             list3.add(map2);
         }
+        JSONArray jsonArray1 = JSONArray.fromObject(booldid);
+        for (int j=0;j<jsonArray1.size();j++){
+            JSONObject jsonObject1 = (JSONObject) jsonArray1.get(j);
+            String desId =jsonObject1.get("resourceCode-schema-tableCode").toString();
+            String srcId =jsonObject1.get("resourceCode-schema-tableCode").toString();
+        }
+
         map4.put("desEntityId", "");
-        map4.put("desEntityCode",TargetTable);
+        map4.put("desEntityCode", TargetTable);
         map4.put("srcEntityId", "");
-        map4.put("srcEntityCode",SourceTable);
+        map4.put("srcEntityCode", SourceTable);
         map4.put("systemId", "");
         map4.put("processId", "");
         map4.put("relationType", "0");
@@ -120,7 +126,7 @@ public class ParseDataCollection {
         return object;
     }
 
-    public static JSONArray getBooldParam(){
+    public static JSONArray getBooldParam() {
         return JSONArray.fromObject(booldParamList);
     }
 }

@@ -39,6 +39,7 @@ public class RestfulApi {
     public static JSONArray dataSource;
     public static JSONArray dataCollection;
     public static JSONObject tableCodes;
+    public static String  result;
 
     @RequestMapping(value = "/hello/{thing}", method = {RequestMethod.GET, RequestMethod.POST})
     public String hello(@PathVariable String thing) {
@@ -117,7 +118,7 @@ public class RestfulApi {
         logger.info("入参------>" + s);
         String result = "";
         try {
-//                      result = Httppost.doPost(entityTableCodeUrl, s);
+            result = Httppost.doPost(entityTableCodeUrl, s);
         } catch (Exception e) {
             e.printStackTrace();
         }
