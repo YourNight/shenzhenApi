@@ -2,21 +2,13 @@ package com.bonc.shenzhen.util;
 
 import org.hibernate.validator.internal.util.privilegedactions.GetMethod;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -102,6 +94,42 @@ public class HttpDownload {
         }
 
     }
+    public void test2() throws Exception{
+        System.out.println("test2进来了");
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
+        String timestr=sdf.format(new Date());
+        String key="bc3d7bc7b0c2409ebaba6127a7298ba8";
+
+
+        String getURL="请求的url";               //这写你自己的
+        URL getUrl = new URL(getURL);
+
+// 根据拼凑的URL，打开连接，URL.openConnection函数会根据URL的类型，
+// 返回不同的URLConnection子类的对象，这里URL是一个http，因此实际返回的是HttpURLConnection
+        HttpURLConnection connection = (HttpURLConnection) getUrl.openConnection();
+// 进行连接，但是实际上get request要在下一句的connection.getInputStream()函数中才会真正发到
+// 服务器
+        connection.setConnectTimeout(25000);
+        connection.setReadTimeout(25000);
+        connection.connect();
+
+        int status = connection.getResponseCode();
+        if (status == 200) {
+            DataInputStream in = new DataInputStream( connection.getInputStream());
+            DataOutputStream out = new DataOutputStream(new FileOutputStream("d:\\a\\c.zip"));
+            byte[] buffer = new byte[400000];
+            int count = 0;
+            while ((count = in.read(buffer)) > 0) {
+                out.write(buffer, 0, count);
+            }
+            out.close();
+            in.close();
+        } else {
+            String strResponse = "error";
+        }
+        connection.disconnect();
+    }
+
     public static void main(String[] args) {
 
         // 下载文件测试

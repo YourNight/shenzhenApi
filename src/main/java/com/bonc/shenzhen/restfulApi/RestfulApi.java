@@ -1,6 +1,6 @@
 package com.bonc.shenzhen.restfulApi;
 
-import com.bonc.shenzhen.test1.Params;
+import com.bonc.shenzhen.test1.ParseDataSource;
 import com.bonc.shenzhen.util.Httppost;
 import com.bonc.shenzhen.util.JsonReader;
 import com.bonc.shenzhen.util.UnZipFromPath;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +31,8 @@ public class RestfulApi {
     @Value("${config.saveMetaRelationsUrl}")
     String saveMetaRelationsUrl;
 
-    @Value("${config.entityTableCodeUrl}")
-    String entityTableCodeUrl;
+    JSONArray dataSource;
+    JSONArray dataCollection;
 
     @RequestMapping(value = "/hello/{thing}",method = {RequestMethod.GET,RequestMethod.POST})
     public String hello(@PathVariable String thing){
@@ -53,12 +52,16 @@ public class RestfulApi {
         logger.info(path);
         System.out.println(request.getContextPath());
         System.out.println(request.getRequestURI());
+
+//        dataSource = new ParseDataSource().getJson();
+
+
         List<JSONObject> jsonList = UnZipFromPath.unzip(url);
         List<JSONObject> saveMetaRelationParamsList = new ArrayList<>();
         for (JSONObject json : jsonList) {
             try {
 
-                List<JSONObject> postParams = JsonReader.getPostParams(json);
+                List<JSONObject> postParams = JsonReader.getPostParams(json,dataSource,dataCollection);
                 saveMetaRelationParamsList.addAll(postParams);
                 for (JSONObject postParam : postParams) {
 //                    String result = Httppost.doPost(saveMetaRelationsUrl, postParam);
@@ -83,20 +86,4 @@ public class RestfulApi {
         }
         return result;
     }
-
-    @RequestMapping("/getparam")
-    public String getparam() throws IOException {
-        Params params = new Params();
-        JSONArray anInterface = params.getInterface();
-        String s = JSONArray.fromObject(anInterface).toString();
-        logger.info("入参------>"+s);
-        String result = "";
-        try {
-            result = Httppost.doPost(entityTableCodeUrl, s);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
 }
