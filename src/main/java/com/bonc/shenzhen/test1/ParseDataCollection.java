@@ -2,6 +2,7 @@ package com.bonc.shenzhen.test1;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -18,19 +19,23 @@ public class ParseDataCollection {
     JSONArray json = null;
     static List<Object> list = new ArrayList<>();
     static List<Object> list1 = new ArrayList<>();
-    Map map1 = new HashMap();
+    List<Object> list2 = new ArrayList();
+    List<Object> list3 = new ArrayList();
 
     public static void main(String[] args) throws IOException {
         JSONArray jsonArray1 = new ParseDataCollection().parseJson();
         for (int i = 0; i < jsonArray1.size(); i++) {
             JSONObject jsonObject1 = (JSONObject) jsonArray1.get(i);
-            String s  = jsonObject1.get("sourceDataSourceId").toString();
+            String s = jsonObject1.get("sourceDataSourceId").toString();
             String sourceTable = jsonObject1.get("sourceTable").toString();//源表名
             String sourceTableSchema = jsonObject1.get("sourceTableSchema").toString();//schema
-            System.out.println(s + "----------"+sourceTable +"---"+sourceTableSchema);
-            System.out.println(list1.toString());
+            System.out.println(s + "----------" + sourceTable + "---" + sourceTableSchema);
         }
+        /*for(int j=0;j<list2.size();j++){
+            System.out.println(list2.get(j));
+        }*/
     }
+
     /**
      * @Description: 遍历解析文件
      * @Param: []
@@ -41,7 +46,7 @@ public class ParseDataCollection {
     public JSONArray parseJson() throws IOException {
         List<String> list2 = gal.getJsonFiles1();
         for (String x : list2) {
-            if(x.endsWith("DirMapping.json")){
+            if (x.endsWith("DirMapping.json")) {
                 continue;
             }
             json = getJson(x);
@@ -67,30 +72,45 @@ public class ParseDataCollection {
         JSONObject jsonObject = JSONObject.fromObject(str);
         String SourceTable = jsonObject.getString("sourceTable");
         String TargetTable = jsonObject.getString("targetTable");
-        String sourceFileFormat = jsonObject.getString("sourceFileFormat");
         String sourceDataSourceId = jsonObject.getString("sourceDataSourceId");
         String sourceTableSchema = jsonObject.getString("sourceTableSchema");
 
-        map1.put("sourceFileFormat",sourceFileFormat);
-        map1.put("sourceDataSourceId",sourceDataSourceId);
-        map1.put("sourceTableSchema",sourceTableSchema);
-        list1.add(map1);
-
         Map map = new HashMap<>();
-        map.put("sourceTable",SourceTable);
-        map.put("targetTable",TargetTable);
-        map.put("sourceDataSourceId",sourceDataSourceId);
-        map.put("sourceTableSchema",sourceTableSchema);
+        Map map2 = new HashMap();
+        Map map3 = new HashMap();
+        Map map4 = new HashMap();
+        map.put("sourceTable", SourceTable);
+        map.put("targetTable", TargetTable);
+        map.put("sourceDataSourceId", sourceDataSourceId);
+        map.put("sourceTableSchema", sourceTableSchema);
         JSONArray jsonArray = jsonObject.getJSONArray("fieldMappings");
         for (int i = 0; i < jsonArray.size(); i++) {
             Object obj = jsonArray.get(i);
             JSONObject fieldMapping = JSONObject.fromObject(obj);
             String src = fieldMapping.get("sourceField").toString();
             String dest = fieldMapping.get("targetField").toString();
-            map.put(src, dest);
+            map3.put("id", "");
+            map3.put("value", "");
+            map3.put("lobValue", "");
+            map3.put("desc", "");
+            map3.put("breifSql", "");
+            map2.put("srcColumn", src);
+            map2.put("desColumn", dest);
+            map2.put("ruleType", "0");
+            map2.put("calcRule", map3);
+            list3.add(map2);
+            map4.put("desEntityId", "");
+            map4.put("desEntityCode", "");
+            map4.put("srcEntityId", "");
+            map4.put("srcEntityCode", "");
+            map4.put("systemId", "");
+            map4.put("processId", "");
+            map4.put("relationType", "0");
+            map4.put("tenantId", "");
+            map4.put("metaRelDetails", list2);
         }
-
         list.add(map);
+//        list.add(map4);
         object = JSONArray.fromObject(list);
         System.out.println(object.toString());
         return object;

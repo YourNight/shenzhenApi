@@ -21,4 +21,15 @@ public class ShenzhenInterfaceApplicationTests {
 
 	}
 
+	@Test
+	public void contextLoads1() {
+		try {
+			String s = Httppost.doPost("http://127.0.0.1:8080/restApi/getparam","df");
+			System.out.println(s);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
 }
