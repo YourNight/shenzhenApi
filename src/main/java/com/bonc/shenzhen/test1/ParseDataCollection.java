@@ -19,10 +19,6 @@ import java.util.Map;
 public class ParseDataCollection {
 
     GetAllFiles gal = new GetAllFiles();
-    JSONArray json = null;
-    static List<Object> list1 = new ArrayList<>();
-
-    static List<Object> booldParamList;
 
     public static void main(String[] args) throws IOException {
         JSONArray jsonArray1 = new ParseDataCollection().parseJson();
@@ -42,16 +38,28 @@ public class ParseDataCollection {
      */
 
     public JSONArray parseJson() throws IOException {
+        JSONArray json = null;
         List<String> list2 = gal.getJsonFiles1();
         List<Object> list = new ArrayList<>();
-        List<Object> paramsList = new ArrayList();
         for (String x : list2) {
             if (x.endsWith("DirMapping.json")) {
                 continue;
             }
-            json = getJson(x, list, paramsList);
+            json = getJson(x, list);
         }
-        booldParamList = paramsList;
+        return json;
+    }
+
+    public JSONArray getBooldParam() throws IOException {
+        JSONArray json = null;
+        List<String> booldlist = gal.getJsonFiles1();
+        List<Object> paramsList = new ArrayList();
+        for (String x : booldlist) {
+            if (x.endsWith("DirMapping.json")) {
+                continue;
+            }
+            json = getJson2(x, paramsList);
+        }
         return json;
     }
 
@@ -61,7 +69,7 @@ public class ParseDataCollection {
      * @return: net.sf.json.JSONArray
      */
 
-    public JSONArray getJson(String path, List<Object> list, List<Object> paramsList) throws IOException {
+    public JSONArray getJson(String path, List<Object> list) throws IOException {
         JSONArray object = null;
         String str = "";
         FileInputStream fileInputStream = new FileInputStream(path);
@@ -75,14 +83,35 @@ public class ParseDataCollection {
         String TargetTable = jsonObject.getString("targetTable");
         String resourceCode = jsonObject.getString("sourceDataSourceId");
         String schema = jsonObject.getString("sourceTableSchema");
-
         Map map = new HashMap<>();
         map.put("sourceTable", SourceTable);
         map.put("targetTable", TargetTable);
         map.put("sourceDataSourceId", resourceCode);
         map.put("sourceTableSchema", schema);
+        list.add(map);
+        object = JSONArray.fromObject(list);
+        System.out.println(object.toString());
+        return object;
+    }
+
+    public static JSONArray getJson2(String path, List<Object> paramsList) throws IOException {
+        JSONArray jsonArray1 = null;
+        String str = "";
+        FileInputStream fileInputStream = new FileInputStream(path);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
+        String s;
+        while ((s = bufferedReader.readLine()) != null) {
+            str = str + s;
+        }
+        JSONObject jsonObject = JSONObject.fromObject(str);
+        String SourceTable = jsonObject.getString("sourceTable");
+        String TargetTable = jsonObject.getString("targetTable");
+        String resourceCode = jsonObject.getString("sourceDataSourceId");
+        String schema = jsonObject.getString("sourceTableSchema");
+
         JSONArray jsonArray = jsonObject.getJSONArray("fieldMappings");
         List<Object> list3 = new ArrayList();
+
         for (int i = 0; i < jsonArray.size(); i++) {
             Map map2 = new HashMap();
             Map map3 = new HashMap();
@@ -115,13 +144,9 @@ public class ParseDataCollection {
         map4.put("tenantId", "");
         map4.put("metaRelDetails", list3);
         paramsList.add(map4);
-        list.add(map);
-        object = JSONArray.fromObject(list);
-        System.out.println(object.toString());
-        return object;
+        jsonArray1 = JSONArray.fromObject(paramsList);
+        System.out.println(jsonArray1.toString());
+        return jsonArray1;
     }
 
-    public static JSONArray getBooldParam() {
-        return JSONArray.fromObject(booldParamList);
-    }
 }

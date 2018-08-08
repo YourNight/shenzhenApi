@@ -23,7 +23,6 @@ public class Params {
 
         List<Object> list1 = new ArrayList<>();
 
-
         for (int i = 0; i < jsonArray1.size(); i++) {
             JSONObject jsonObject1 = (JSONObject) jsonArray1.get(i);
             String sourceDataSourceId = jsonObject1.get("sourceDataSourceId").toString();//数据源ID

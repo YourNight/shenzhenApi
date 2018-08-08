@@ -39,6 +39,7 @@ public class RestfulApi {
     public static JSONArray dataSource;
     public static JSONArray dataCollection;
     public static JSONObject tableCodes;
+    public static JSONArray booldParam;
 
     @RequestMapping(value = "/hello/{thing}", method = {RequestMethod.GET, RequestMethod.POST})
     public String hello(@PathVariable String thing) {
@@ -98,13 +99,12 @@ public class RestfulApi {
                 Params params = new Params();
                 JSONArray anInterface = params.getInterface();
                 tableCodes = JSONObject.fromObject(Httppost.doPost(entityTableCodeUrl, anInterface.toString()));
+                ParseDataCollection parseDataCollection = new ParseDataCollection();
+                booldParam = parseDataCollection.getBooldParam();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        JSONArray booldParam = ParseDataCollection.getBooldParam();
-
         return booldParam.toString();
     }
 
