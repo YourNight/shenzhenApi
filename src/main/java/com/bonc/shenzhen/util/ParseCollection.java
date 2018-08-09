@@ -18,8 +18,9 @@ public class ParseCollection {
         for (int i = 0; i < jsonArray1.size(); i++) {
             JSONObject jsonObject1 = (JSONObject) jsonArray1.get(i);
             String sourceTable = jsonObject1.get("sourceTable").toString();//源表名
+            String resourceCode = jsonObject1.getString("sourceDataSourceId");
             String sourceTableSchema = jsonObject1.get("sourceTableSchema").toString();//schema
-            System.out.println( "----------" + sourceTable + "---" + sourceTableSchema);
+            System.out.println( "----------" + sourceTable + "---" + sourceTableSchema+"-----"+resourceCode);
         }
     }
 
@@ -27,12 +28,12 @@ public class ParseCollection {
         JSONArray object = null;
         List<JSONObject> list = new ArrayList<>();
         list = unZipFromPath.read();
+        List<Object> return_list = new ArrayList();
         for (int i = 0; i < list.size(); i++) {
             Map map = new HashMap();
             map = list.get(i);
             JSONArray jsonArray = JSONArray.fromObject(map);
             for (int j = 0; j < jsonArray.size(); j++) {
-                List<Object> return_list = new ArrayList();
                 JSONObject jsonObject = (JSONObject) jsonArray.get(j);
                 String SourceTable = jsonObject.getString("sourceTable");
                 String TargetTable = jsonObject.getString("targetTable");
@@ -44,10 +45,10 @@ public class ParseCollection {
                 map2.put("sourceDataSourceId", resourceCode);
                 map2.put("sourceTableSchema", schema);
                 return_list.add(map2);
-                object = JSONArray.fromObject(return_list);
-                System.out.println(object.toString());
             }
         }
+        object = JSONArray.fromObject(return_list);
+        System.out.println(object.toString());
         return object;
     }
 

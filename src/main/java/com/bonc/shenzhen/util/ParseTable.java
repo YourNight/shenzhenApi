@@ -11,14 +11,12 @@ public class ParseTable {
     public static void main(String[] args) {
         JSONArray jsonArray = new ParseTable().getData();
         for (int j = 0; j < jsonArray.size(); j++) {
-            Object o = jsonArray.get(j);
             JSONObject jsonObject2 = (JSONObject) jsonArray.get(j);
             Map<String, String> map = (Map<String, String>) jsonObject2;
             Set<String> set = map.keySet();
             String s = map.get(set.toArray()[0].toString());
-            System.out.println(set.toString() + "--" + s);
+            System.out.println(set.toArray()[0].toString() + "--" + s);
             System.out.println(jsonObject2.toString() + j + "++++++++++++++++++++++++++");
-            System.out.println(o.toString() + j + "--------------------------------");
         }
     }
 
@@ -37,8 +35,9 @@ public class ParseTable {
                 String id = jsonObject.get("id").toString();
                 String name = jsonObject.get("name").toString();
                 Map map2 = new HashMap();
-                map2.put("id", id);
-                map2.put("name", name);
+                map2.put(id,name);
+               /* map2.put("id", id);
+                map2.put("name", name);*/
                 list2.add(map2);
                 object = JSONArray.fromObject(list2);
                 System.out.println(object.toString());

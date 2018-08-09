@@ -51,7 +51,7 @@ public class Params {
             }
         }
         jsonArray11 = JSONArray.fromObject(list1);
-        System.out.println(jsonArray11.toString());
+        System.out.println("----------------------------------"+jsonArray11.toString());
         return jsonArray11;
     }
 
