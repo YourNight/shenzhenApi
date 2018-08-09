@@ -389,8 +389,9 @@ public class JsonReader {
     }
 
     public static void main(String[] args) {
-//        getPostParams(getJson("C:/Users/BONC/Desktop/018950/7c132565-8eb3-41da-b2e6-6d3e0690ba7c.json"));
+//        getPostParams(getJson("C:/Users/BONC/Desktop/018950/194a96a6-6e84-4f17-a5c8-b58a3f640a62.json"));
 //        System.out.println(getJson("C:/Users/BONC/Desktop/018950/log.txt"));
-        System.out.println(ClassLoader.getSystemResource(""));
+        System.out.println(getJson("C:/Users/BONC/Desktop/018950/194a96a6-6e84-4f17-a5c8-b58a3f640a62.json"));
+//        System.out.println(ClassLoader.getSystemResource(""));
     }
 }
