@@ -1,10 +1,9 @@
 package com.bonc.shenzhen.restfulApi;
 
-import com.bonc.shenzhen.test1.Params;
-import com.bonc.shenzhen.test1.ParseDataCollection;
-import com.bonc.shenzhen.test1.ParseDataSource;
+import com.bonc.shenzhen.util.Params;
 import com.bonc.shenzhen.util.Httppost;
 import com.bonc.shenzhen.util.JsonReader;
+import com.bonc.shenzhen.util.ParseCollection;
 import com.bonc.shenzhen.util.UnZipFromPath;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -51,7 +50,6 @@ public class RestfulApi {
     @RequestMapping(value = "/saveMetaRelation")
     public String saveMetaRelation(HttpServletRequest request) {
 
-//        dataSource = new ParseDataSource().getJson();
 
         String result = null;
         try {
@@ -92,20 +90,21 @@ public class RestfulApi {
         return result;
     }
 
+
+
     @RequestMapping("/sssss")
-    public String getBoold() {
+    public String getParamBoold(){
+        ParseCollection parseCollection = new ParseCollection();
+        JSONArray boold = parseCollection.getBoold();
+        String s = JSONArray.fromObject(boold).toString();
+        logger.info("入参------>" + s);
+        String result = "";
         try {
-            if (dataSource == null || dataCollection == null || tableCodes == null) {
-                Params params = new Params();
-                JSONArray anInterface = params.getInterface();
-                tableCodes = JSONObject.fromObject(Httppost.doPost(entityTableCodeUrl, anInterface.toString()));
-                ParseDataCollection parseDataCollection = new ParseDataCollection();
-                booldParam = parseDataCollection.getBooldParam();
-            }
+            result = Httppost.doPost(entityTableCodeUrl, s);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return booldParam.toString();
+        return result;
     }
 
     @RequestMapping("/getEntityTableCodes")

@@ -1,4 +1,4 @@
-package com.bonc.shenzhen.test1;
+package com.bonc.shenzhen.util;
 
 import com.bonc.shenzhen.restfulApi.RestfulApi;
 import net.sf.json.JSONArray;
@@ -9,17 +9,17 @@ import java.util.*;
 
 public class Params {
 
-    ParseDataCollection dataCollectionParse = new ParseDataCollection();
-    ParseDataSource parseDataSource = new ParseDataSource();
+    ParseCollection parseCollection = new ParseCollection();
+    ParseTable parseTable = new ParseTable();
 
 
-    public JSONArray getInterface() throws IOException {
+    public JSONArray getInterface() {
         JSONArray jsonArray11 = null;
-        JSONArray jsonArray1 = dataCollectionParse.parseJson();
-        JSONArray jsonArray2 = parseDataSource.parseJson();
+        JSONArray jsonArray1 = parseCollection.getInter();
+        JSONArray jsonArray2 = parseTable.getData();
 
-        RestfulApi.dataCollection=jsonArray1;
-        RestfulApi.dataSource=jsonArray2;
+        RestfulApi.dataCollection = jsonArray1;
+        RestfulApi.dataSource = jsonArray2;
 
         List<Object> list1 = new ArrayList<>();
 

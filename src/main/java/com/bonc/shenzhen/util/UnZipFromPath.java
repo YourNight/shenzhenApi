@@ -13,13 +13,24 @@ import java.util.zip.ZipInputStream;
  * Created by liuhaolong on 2018/8/1.
  */
 public class UnZipFromPath {
-    public void test() {
 
+  /*  public static void main(String[] args) {
+        read();
+    }*/
+
+    public static  List<JSONObject> read(){
+        String zip = "H:\\SoftwareCache\\OneDriver\\OneDrive\\工作资料\\项目\\63所\\解析测试\\DataCollectionExport_20180710102020.zip";
+        return  unzip(zip);
+    }
+
+    public static  List<JSONObject> readdata(){
+        String zip = "H:\\SoftwareCache\\OneDriver\\OneDrive\\工作资料\\项目\\63所\\解析测试\\DatasourceExport_20180710094013.zip";
+        return  unzip(zip);
     }
 
     public static void main(String[] args) {
-//        String zip = "C:\\Users\\BONC\\Desktop\\018950\\深圳\\数据样例\\DataFlowExport_20180710100847.zip";
-//        System.out.println(unzip(zip));
+        String zip = "H:\\SoftwareCache\\OneDriver\\OneDrive\\工作资料\\项目\\63所\\解析测试\\DataCollectionExport_20180710102020.zip";
+        System.out.println(unzip(zip));
         try {
             System.out.println("******************开始******************");
             String s = Httppost.doPost("http://172.16.11.9:8189/webapp/rest/entityTableService/getEntityTableByCode/tenant1", "[{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_source\",\"tableCode\":\"T_TRAILIFNO\"},{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_source\",\"tableCode\":\"T_TRAILIFNO\"},{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_source\",\"tableCode\":\"T_EXTERNAL_PEOPLELIB\"},{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_source\",\"tableCode\":\"T_EXTERNAL_PEOPLELIB\"},{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_source\",\"tableCode\":\"T_PEOPLERISK\"},{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_source\",\"tableCode\":\"T_PEOPLERISK\"},{\"schema\":\"\",\"resourceCode\":\"hjw_test\",\"tableCode\":\"iae_designer_template\"},{\"schema\":\"\",\"resourceCode\":\"hjw_test\",\"tableCode\":\"iae_designer_template_copy_1\"},{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_goal\",\"tableCode\":\"T_TRAILIFNO\"},{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_goal\",\"tableCode\":\"t_trailifno_py\"},{\"schema\":\"CD\",\"resourceCode\":\"hanxu_oracle\",\"tableCode\":\"TB_DPSR_IDCARD\"},{\"schema\":\"CD\",\"resourceCode\":\"hanxu_oracle\",\"tableCode\":\"TB_DPSR_IDCARD_bak\"},{\"schema\":\"\",\"resourceCode\":\"hjw_test\",\"tableCode\":\"iae_designer_template\"},{\"schema\":\"\",\"resourceCode\":\"hjw_test\",\"tableCode\":\"test_2\"},{\"schema\":\"\",\"resourceCode\":\"hjw_mysql_test\",\"tableCode\":\"iae_designer_template\"},{\"schema\":\"\",\"resourceCode\":\"hjw_mysql_test\",\"tableCode\":\"test_2\"},{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_source\",\"tableCode\":\"T_TRAILIFNO\"},{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_source\",\"tableCode\":\"t_trailifno\"},{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_source\",\"tableCode\":\"T_EXTERNAL_PEOPLELIB\"},{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_source\",\"tableCode\":\"t_external_peoplelib\"},{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_source\",\"tableCode\":\"T_PEOPLERISK\"},{\"schema\":\"ENGINEDB\",\"resourceCode\":\"qingdao_oracle_source\",\"tableCode\":\"t_peoplerisk\"}]");
