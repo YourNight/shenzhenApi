@@ -12,18 +12,13 @@ import java.util.Map;
 
 public class ParamsBoold {
 
-    @Value("${datacollection.url}")
-    static String collectionUrl;
-
-    static UnZipFromPath unZipFromPath = new UnZipFromPath();
-
-    public static JSONArray getBoold() {
+    public  JSONArray getBoold(String collectionUrl) {
 
         JSONArray object = null;
         List<JSONObject> list = new ArrayList<>();
         List<Object> param_list = new ArrayList();
         List<Object> param_list2 = new ArrayList();
-        list = unZipFromPath.unzip(collectionUrl);
+        list = UnZipFromPath.unzip(collectionUrl);
         for (int i = 0; i < list.size(); i++) {
             Map map = new HashMap();
             map = list.get(i);

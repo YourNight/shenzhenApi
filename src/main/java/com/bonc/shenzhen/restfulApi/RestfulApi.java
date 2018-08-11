@@ -115,11 +115,9 @@ public class RestfulApi {
 
     @RequestMapping("/sssss")
     public String getParamBoold(){
-        ParseCollection parseCollection = new ParseCollection();
+        ParamsBoold paramsBoold = new ParamsBoold();
 
-
-
-        JSONArray boold = ParamsBoold.getBoold();
+        JSONArray boold = paramsBoold.getBoold(collectionUrl);
 
         String s = JSONArray.fromObject(boold).toString();
         logger.info("入参------>" + s);
