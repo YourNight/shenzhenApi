@@ -63,6 +63,7 @@ public class UnZipFromPath {
                                 str = str + s ;
                             }
                             jsonList.add(JSONObject.fromObject(str));
+                            System.out.println(JSONObject.fromObject(str));
                         }
                     }
                 }catch (Exception e){
