@@ -27,16 +27,16 @@ public class TaskflowParse {
         //获取工作流节点
         JSONObject workflowNode = JSONObject.fromObject(jsonStr.get("workflowNode"));
         //获取所有节点
-        Map<String, JSONObject> nodesMap = JsonReader.getNodeMap(workflowNode);
+        Map<String, JSONObject> nodesMap = DataFlowParse.getNodeMap(workflowNode);
         nodesMap.forEach((a,b)->{
             System.out.println(a+":"+JSONArray.fromObject(b.get("metaType")).toArray()[0].toString());
         });
         //所有节点的关系Map
-        Map<String, String> relationMap = JsonReader.getRelationMap(workflowNode);
+        Map<String, String> relationMap = DataFlowParse.getRelationMap(workflowNode);
 
 
         //获取源表和目标表的id
-        Map<String, Set> tableIds = JsonReader.getSourceIds(relationMap);
+        Map<String, Set> tableIds = DataFlowParse.getSourceIds(relationMap);
         Set sourceIds = tableIds.get("sourceIds");
 //        Set targetIds = tableIds.get("targetIds");
 
@@ -74,7 +74,7 @@ public class TaskflowParse {
             String taskId=nodeJson.get(typeName).toString();
         System.out.println("taskId--->"+taskId);
             if (taskId.equals(workflowId)){
-                List<JSONObject> postParams = JsonReader.getPostParams(dataflow, RestfulApi.dataSource, RestfulApi.dataCollection, RestfulApi.tableCodes);
+                List<JSONObject> postParams = DataFlowParse.getPostParams(dataflow, RestfulApi.dataSource, RestfulApi.dataCollection, RestfulApi.tableCodes);
                 taskParams.addAll(postParams);
             }
         }

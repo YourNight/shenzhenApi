@@ -2,7 +2,7 @@ package com.bonc.shenzhen.util;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.util.*;
@@ -10,11 +10,10 @@ import java.util.*;
 /**
  * Created by liuhaolong on 2018/8/1.
  */
-public class JsonReader {
+public class DataFlowParse {
 
+    private static Logger logger = Logger.getLogger(DataFlowParse.class);
 
-    @Value("${config.entityTableCodeUrl}")
-    static String entityTableCodeUrl;
 
 
     public static List<JSONObject> getPostParams(JSONObject jsonStr,JSONArray dataSource,JSONArray dataCollection,JSONObject tableCodes){
@@ -36,14 +35,14 @@ public class JsonReader {
         Map<String, String> enumMap = getEnumMap(targetId, nodesMap);
 
 
-        System.out.println("源表id："+sourceTablesId);
-        System.out.println("目标表id："+targetTablesId);
+//        System.out.println("源表id："+sourceTablesId);
+//        System.out.println("目标表id："+targetTablesId);
 //        System.out.println(map);
 //        getSourceIdsAndResultId(map);
 //        System.out.println("所有节点的map：");
-        nodesMap.forEach((a,b)->{
-            System.out.println(a+":"+b);
-        });
+//        nodesMap.forEach((a,b)->{
+//            System.out.println(a+":"+b);
+//        });
 //        System.out.println(nodesMap.get("83"));
 //        System.out.println(JSONObject.fromObject(enumMap));
 
@@ -68,14 +67,14 @@ public class JsonReader {
 
             // TODO 加入目标表id
 
-            metaRelations.put("desEntityId",tableCodes.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName).toString());
+            metaRelations.put("desEntityId",tableCodes.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName)!=null?tableCodes.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName).toString():"");
             metaRelations.put("desEntityCode",targetTableName);
             // todo 加入源表id
             String tableName = tableMetaData.get("modelName").toString();//当前表名
             String schema = getSchema(dataCollection, tableName, dataSourceId);//源表当前schema
             String resourceCode = getResourceCode(dataSource, dataSourceId);
 
-            metaRelations.put("srcEntityId",tableCodes.get(resourceCode+"-"+schema+"-"+tableName).toString());
+            metaRelations.put("srcEntityId",tableCodes.get(resourceCode+"-"+schema+"-"+tableName)!=null?tableCodes.get(resourceCode+"-"+schema+"-"+tableName).toString():"");
             metaRelations.put("srcEntityCode",tableName);
             List<Map> list = new ArrayList<>();
             list = getMetaRelDetails(id, relationMap, nodesMap, enumMap, list);
@@ -85,8 +84,11 @@ public class JsonReader {
             params.put("relationType",0);
             params.put("tenantId","tenant1");
             params.put("metaRelations",metaRelations);
-            paramsList.add(JSONObject.fromObject(params));
-            System.out.println(JSONObject.fromObject(params));
+            Map<String , Object> paramsObject = new HashMap<>();
+            paramsObject.put("token","1");
+            paramsObject.put("objectInfo",params);
+            paramsList.add(JSONObject.fromObject(paramsObject));
+            logger.info(JSONObject.fromObject(paramsObject));
         }
         return  paramsList;
 
@@ -130,67 +132,6 @@ public class JsonReader {
         }
         return dataSourceName;
     }
-
-    /**
-     * 获取目标表在数据治理平台的id
-     * @param targetJson
-     * @return
-     */
-    private static JSONObject getTargetTableCode( JSONObject targetJson,JSONArray dataSource,JSONArray dataCollection) {
-        List<Map> paramsList = new ArrayList<>();
-        Map<String, Object> params = new HashMap<>();
-        String targetTableName = targetJson.get("modelName").toString();
-        String dataSourceId = targetJson.get("dataSourceId").toString();
-        String dataSourceName = getResourceCode(dataSource, dataSourceId);
-        String schema = getSchema(dataCollection, targetTableName, dataSourceId);
-        params.put("tableCode",targetTableName);
-        params.put("schema",schema);
-        params.put("resourceCode",dataSourceName);
-        paramsList.add(params);
-        JSONObject targetTableCode = null;
-        try {
-            String targetTableCodeStr = Httppost.doPost(entityTableCodeUrl, JSONArray.fromObject(paramsList).toString());
-            targetTableCode = JSONObject.fromObject(targetTableCodeStr);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return targetTableCode;
-    }
-
-    /**
-     * 获取源表在治理平台的id集合
-     * @param nodesMap
-     * @param sourceTablesId
-     * @return
-     */
-    private static JSONObject getSourceTableCode(Map<String, JSONObject> nodesMap, Set sourceTablesId,JSONArray dataSource,JSONArray dataCollection) {
-        List<Map> paramsList = new ArrayList<>();
-        for (Object o : sourceTablesId) {
-            Map<String, Object> params = new HashMap<>();
-            String id = o.toString();
-            JSONObject tableJson = nodesMap.get(id);
-
-            String sourceTableName = tableJson.get("modelName").toString();
-            String dataSourceId = tableJson.get("dataSourceId").toString();
-            String dataSourceName = getResourceCode(dataSource, dataSourceId);
-            String schema = getSchema(dataCollection, sourceTableName, dataSourceId);
-
-            params.put("tableCode",sourceTableName);
-            params.put("schema",schema);
-            params.put("resourceCode",dataSourceName);
-            paramsList.add(params);
-        }
-        JSONObject sourceTableCodes = null;
-        try {
-            String sourceTableCodesStr = Httppost.doPost(entityTableCodeUrl, JSONArray.fromObject(paramsList).toString());
-            sourceTableCodes = JSONObject.fromObject(sourceTableCodesStr);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return sourceTableCodes;
-    }
-
-
 
     /**
      * 获取metaRelDetails
@@ -390,13 +331,5 @@ public class JsonReader {
             e.printStackTrace();
         }
         return jsonFrom;
-    }
-
-    public static void main(String[] args) {
-//        getPostParams(getJson("C:/Users/BONC/Desktop/018950/194a96a6-6e84-4f17-a5c8-b58a3f640a62.json"));
-//        System.out.println(getJson("C:/Users/BONC/Desktop/018950/log.txt"));
-//        System.out.println(getJson("C:/Users/BONC/Desktop/018950/194a96a6-6e84-4f17-a5c8-b58a3f640a62.json"));
-//        System.out.println(ClassLoader.getSystemResource(""));
-//        System.out.println(entityTableCodeUrl);
     }
 }

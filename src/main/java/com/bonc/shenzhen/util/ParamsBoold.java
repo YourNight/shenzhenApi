@@ -1,9 +1,7 @@
 package com.bonc.shenzhen.util;
 
-import com.bonc.shenzhen.restfulApi.RestfulApi;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,64 +10,64 @@ import java.util.Map;
 
 public class ParamsBoold {
 
-    public  JSONArray getBoold(String collectionUrl) {
+    public static  JSONArray getBoold(String collectionUrl ,JSONObject tableCodes) {
 
         JSONArray object = null;
-        List<JSONObject> list = new ArrayList<>();
-        List<Object> param_list = new ArrayList();
-        List<Object> param_list2 = new ArrayList();
-        list = UnZipFromPath.unzip(collectionUrl);
+        List<Object> metaRelations = new ArrayList();
+        List<Object> saveRelationParams = new ArrayList();
+        List<JSONObject> list  = UnZipFromPath.unzip(collectionUrl);
+
         for (int i = 0; i < list.size(); i++) {
-            Map map = new HashMap();
-            map = list.get(i);
-            JSONArray jsonArray = JSONArray.fromObject(map);
-            for (int j = 0; j < jsonArray.size(); j++) {
-                JSONObject jsonObject = (JSONObject) jsonArray.get(j);
-                String SourceTable = jsonObject.getString("sourceTable");
-                String TargetTable = jsonObject.getString("targetTable");
-                String resourceCode = jsonObject.getString("sourceDataSourceId");
-                String schema = jsonObject.getString("sourceTableSchema");
-                JSONArray jsonArray2 = jsonObject.getJSONArray("fieldMappings");
-                List<Object> list3 = new ArrayList();
-                for (int k = 0; k < jsonArray2.size(); k++) {
-                    Map map2 = new HashMap();
-                    Map map3 = new HashMap();
-                    Object obj = jsonArray2.get(i);
-                    JSONObject fieldMapping = JSONObject.fromObject(obj);
-                    String src = fieldMapping.get("sourceField").toString();
-                    String dest = fieldMapping.get("targetField").toString();
-                    map3.put("id", "");
-                    map3.put("value", "");
-                    map3.put("lobValue", "");
-                    map3.put("desc", "");
-                    map3.put("breifSql", "");
-                    map2.put("srcColumn", src);
-                    map2.put("desColumn", dest);
-                    map2.put("ruleType", "0");
-                    map2.put("calcRule", map3);
-                    list3.add(map2);
-                }
-                Map map4 = new HashMap();
-                JSONObject jsonObject1 = RestfulApi.tableCodes;
-                String desId = jsonObject1.get(resourceCode + "-" + schema + "-" + TargetTable).toString();
-                String srcId = jsonObject1.get(resourceCode + "-" + schema + "-" + SourceTable).toString();
-                map4.put("desEntityId", desId);
-                map4.put("desEntityCode", TargetTable);
-                map4.put("srcEntityId", srcId);
-                map4.put("srcEntityCode", SourceTable);
-                map4.put("metaRelDetails", list3);
-                param_list.add(map4);
-                Map map5 = new HashMap();
-                map5.put("systemId", "");
-                map5.put("processId", "");
-                map5.put("relationType", "0");
-                map5.put("tenantId", "");
-                map5.put("metaRelations",param_list);
-                param_list.add(map5);
-                object = JSONArray.fromObject(param_list2);
-                System.out.println(object.toString());
+            JSONObject dataCollectionJson = list.get(i);
+            String sourceTable = dataCollectionJson.getString("sourceTable");
+            String targetTable = dataCollectionJson.getString("targetTable");
+            String resourceCode = dataCollectionJson.getString("sourceDataSourceId");
+            String schema = dataCollectionJson.getString("sourceTableSchema");
+            String dataCollectionTaskId = dataCollectionJson.getString("dataCollectionTaskId");
+            JSONArray fieldMappings = dataCollectionJson.getJSONArray("fieldMappings");
+            List<Object> metaRelDetails = new ArrayList();
+            for (int k = 0; k < fieldMappings.size(); k++) {
+                Map relDetail = new HashMap();
+                Map calcRule = new HashMap();
+                Object obj = fieldMappings.get(k);
+                JSONObject fieldMapping = JSONObject.fromObject(obj);
+                String src = fieldMapping.get("sourceField").toString();
+                String dest = fieldMapping.get("targetField").toString();
+                calcRule.put("id", "");
+                calcRule.put("value", "");
+                calcRule.put("lobValue", "");
+                calcRule.put("desc", "");
+                calcRule.put("breifSql", "");
+                relDetail.put("srcColumn", src);
+                relDetail.put("desColumn", dest);
+                relDetail.put("ruleType", "0");
+                relDetail.put("calcRule", calcRule);
+                metaRelDetails.add(relDetail);
             }
+            Map relationMap = new HashMap();
+
+            String desId = tableCodes.get(resourceCode + "-" + schema + "-" + targetTable)!=null?tableCodes.get(resourceCode + "-" + schema + "-" + targetTable).toString():"";
+            String srcId = tableCodes.get(resourceCode + "-" + schema + "-" + sourceTable)!=null?tableCodes.get(resourceCode + "-" + schema + "-" + sourceTable).toString():"";
+            relationMap.put("desEntityId", desId);
+            relationMap.put("desEntityCode", targetTable);
+            relationMap.put("srcEntityId", srcId);
+            relationMap.put("srcEntityCode", sourceTable);
+            relationMap.put("metaRelDetails", metaRelDetails);
+            metaRelations.add(relationMap);
+            Map objectInfo = new HashMap();
+            objectInfo.put("systemId", 2);
+            objectInfo.put("processId", dataCollectionTaskId);
+            objectInfo.put("relationType", 0);
+            objectInfo.put("tenantId", "tenant1");
+            objectInfo.put("metaRelations",metaRelations);
+
+            Map<String, Object> paramObject = new HashMap<>();
+            paramObject.put("token","1");
+            paramObject.put("objectInfo",objectInfo);
+            saveRelationParams.add(paramObject);
+            object = JSONArray.fromObject(saveRelationParams);
         }
+
         return object;
     }
 
