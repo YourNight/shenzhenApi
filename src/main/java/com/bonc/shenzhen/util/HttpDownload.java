@@ -100,19 +100,9 @@ public class HttpDownload {
         }
 
     }
-    public static  void test2() throws Exception{
-//             Protocol myhttps = new Protocol("https", new MySSLSocketFactory(), 443);
-//    Protocol.registerProtocol("https", myhttps);
-//        System.setProperty("javax.net.ssl.trustStore", "C:\\Users\\BONC\\Desktop\\jssecacerts");
-        System.out.println("test2进来了");
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
-        String timestr=sdf.format(new Date());
-        String key="bc3d7bc7b0c2409ebaba6127a7298ba8";
-
-
+    public static  void download(String path,String downloadUrl) throws Exception{
         String getURL="http://172.16.36.161:8082/DataFlowExport_20180710100847.zip";               //这写你自己的
-        URL getUrl = new URL(getURL);
-
+        URL getUrl = new URL(path);
 // 根据拼凑的URL，打开连接，URL.openConnection函数会根据URL的类型，
 // 返回不同的URLConnection子类的对象，这里URL是一个http，因此实际返回的是HttpURLConnection
         HttpURLConnection connection = (HttpURLConnection) getUrl.openConnection();
@@ -126,11 +116,7 @@ public class HttpDownload {
         if (status == 200) {
             DataInputStream in = new DataInputStream( connection.getInputStream());
 
-
-
-
-
-            try {
+           /* try {
                 Charset gbk = Charset.forName("gbk");
                 ZipInputStream Zin=new ZipInputStream(in,gbk);//输入源zip路径
                 BufferedInputStream Bin=new BufferedInputStream(Zin);
@@ -162,21 +148,15 @@ public class HttpDownload {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+*/
 
-
-
-
-
-
-
-
-//            DataOutputStream out = new DataOutputStream(new FileOutputStream("C:\\Users\\BONC\\Desktop\\018950\\c.zip"));
-//            byte[] buffer = new byte[400000];
-//            int count = 0;
-//            while ((count = in.read(buffer)) > 0) {
-//                out.write(buffer, 0, count);
-//            }
-//            out.close();
+            DataOutputStream out = new DataOutputStream(new FileOutputStream(downloadUrl));
+            byte[] buffer = new byte[400000];
+            int count = 0;
+            while ((count = in.read(buffer)) > 0) {
+                out.write(buffer, 0, count);
+            }
+            out.close();
             in.close();
         } else {
             String strResponse = "error";
@@ -191,7 +171,7 @@ public class HttpDownload {
 //        System.out.println();
 
         try {
-            test2();
+            download("http://172.16.36.161:8082/DataFlowExport_20180710100847.zip","C:\\Users\\BONC\\Desktop\\018950\\c.zip");
         } catch (Exception e) {
             e.printStackTrace();
         }

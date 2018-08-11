@@ -1,4 +1,4 @@
-package com.bonc.shenzhen.util;
+package com.bonc.shenzhen.jsonParse;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
