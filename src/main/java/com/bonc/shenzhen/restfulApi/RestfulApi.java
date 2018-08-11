@@ -1,11 +1,14 @@
 package com.bonc.shenzhen.restfulApi;
 
+import com.bonc.shenzhen.util.*;
+
 import com.bonc.shenzhen.util.Params;
 import com.bonc.shenzhen.util.Httppost;
 import com.bonc.shenzhen.util.JsonReader;
 import com.bonc.shenzhen.util.ParseCollection;
 import com.bonc.shenzhen.util.UnZipFromPath;
-import com.sun.org.apache.bcel.internal.generic.NEW;
+
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.log4j.Logger;
@@ -47,7 +50,6 @@ public class RestfulApi {
     public static JSONArray dataSource;
     public static JSONArray dataCollection;
     public static JSONObject tableCodes;
-    public static JSONArray booldParam;
 
     @RequestMapping(value = "/hello/{thing}", method = {RequestMethod.GET, RequestMethod.POST})
     public String hello(@PathVariable String thing) {
@@ -114,7 +116,11 @@ public class RestfulApi {
     @RequestMapping("/sssss")
     public String getParamBoold(){
         ParseCollection parseCollection = new ParseCollection();
-        JSONArray boold = parseCollection.getBoold(collectionUrl);
+
+
+
+        JSONArray boold = ParamsBoold.getBoold();
+
         String s = JSONArray.fromObject(boold).toString();
         logger.info("入参------>" + s);
         String result = "";
