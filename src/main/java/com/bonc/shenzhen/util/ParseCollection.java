@@ -3,6 +3,8 @@ package com.bonc.shenzhen.util;
 import com.bonc.shenzhen.restfulApi.RestfulApi;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 public class ParseCollection {
+
+    @Value("${datacollection.url}")
+    String collectionUrl;
 
     UnZipFromPath unZipFromPath = new UnZipFromPath();
 
@@ -27,7 +32,7 @@ public class ParseCollection {
     public JSONArray getInter() {
         JSONArray object = null;
         List<JSONObject> list = new ArrayList<>();
-        list = unZipFromPath.read();
+        list = unZipFromPath.unzip(collectionUrl);
         List<Object> return_list = new ArrayList();
         for (int i = 0; i < list.size(); i++) {
             Map map = new HashMap();
