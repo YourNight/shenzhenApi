@@ -18,7 +18,7 @@ public class UnZipFromPath {
         read();
     }*/
 
-    public static  List<JSONObject> read(){
+  /*  public static  List<JSONObject> read(){
         String zip = "H:\\SoftwareCache\\OneDriver\\OneDrive\\工作资料\\项目\\63所\\解析测试\\DataCollectionExport_20180710102020.zip";
         return  unzip(zip);
     }
@@ -26,7 +26,7 @@ public class UnZipFromPath {
     public static  List<JSONObject> readdata(){
         String zip = "H:\\SoftwareCache\\OneDriver\\OneDrive\\工作资料\\项目\\63所\\解析测试\\DatasourceExport_20180710094013.zip";
         return  unzip(zip);
-    }
+    }*/
 
     public static void main(String[] args) {
         String zip = "H:\\SoftwareCache\\OneDriver\\OneDrive\\工作资料\\项目\\63所\\解析测试\\DataCollectionExport_20180710102020.zip";

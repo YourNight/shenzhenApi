@@ -2,10 +2,15 @@ package com.bonc.shenzhen.util;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.*;
 
 public class ParseTable {
+
+    @Value("${datasource.url}")
+    String datasourceUrl;
+
     UnZipFromPath unZipFromPath = new UnZipFromPath();
 
     public static void main(String[] args) {
@@ -24,7 +29,7 @@ public class ParseTable {
         JSONArray object = null;
         List<Object> list2 = new ArrayList<>();
         List<JSONObject> list = new ArrayList<>();
-        list = unZipFromPath.readdata();
+        list = unZipFromPath.unzip(datasourceUrl);
         for (int i = 0; i < list.size(); i++) {
             Map map = new HashMap();
             map = list.get(i);

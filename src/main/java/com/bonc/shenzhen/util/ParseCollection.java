@@ -3,6 +3,8 @@ package com.bonc.shenzhen.util;
 import com.bonc.shenzhen.restfulApi.RestfulApi;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 public class ParseCollection {
+
+    @Value("${datacollection.url}")
+    String collectionUrl;
 
     UnZipFromPath unZipFromPath = new UnZipFromPath();
 
@@ -27,7 +32,7 @@ public class ParseCollection {
     public JSONArray getInter() {
         JSONArray object = null;
         List<JSONObject> list = new ArrayList<>();
-        list = unZipFromPath.read();
+        list = unZipFromPath.unzip(collectionUrl);
         List<Object> return_list = new ArrayList();
         for (int i = 0; i < list.size(); i++) {
             Map map = new HashMap();
@@ -53,9 +58,11 @@ public class ParseCollection {
     }
 
     public JSONArray getBoold() {
+
         JSONArray object = null;
         List<JSONObject> list = new ArrayList<>();
         List<Object> param_list = new ArrayList();
+        List<Object> param_list2 = new ArrayList();
         list = unZipFromPath.read();
         for (int i = 0; i < list.size(); i++) {
             Map map = new HashMap();
@@ -95,13 +102,16 @@ public class ParseCollection {
                 map4.put("desEntityCode", TargetTable);
                 map4.put("srcEntityId", srcId);
                 map4.put("srcEntityCode", SourceTable);
-                map4.put("systemId", "");
-                map4.put("processId", "");
-                map4.put("relationType", "0");
-                map4.put("tenantId", "");
                 map4.put("metaRelDetails", list3);
                 param_list.add(map4);
-                object = JSONArray.fromObject(param_list);
+                Map map5 = new HashMap();
+                map5.put("systemId", "");
+                map5.put("processId", "");
+                map5.put("relationType", "0");
+                map5.put("tenantId", "");
+                map5.put("metaRelations",param_list);
+                param_list.add(map5);
+                object = JSONArray.fromObject(param_list2);
                 System.out.println(object.toString());
             }
         }
