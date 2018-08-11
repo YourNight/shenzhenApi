@@ -171,7 +171,7 @@ public class HttpDownload {
 //        System.out.println();
 
         try {
-            download("http://172.16.36.161:8082/DataFlowExport_20180710100847.zip","C:\\Users\\BONC\\Desktop\\018950\\c.zip");
+            download("http://172.22.201.69:7001/datatable/rest/dataTables/export?directoryId=1","C:\\Users\\BONC\\Desktop\\018950\\asgfaisdgflkasdfasgfalsd.zip");
         } catch (Exception e) {
             e.printStackTrace();
         }

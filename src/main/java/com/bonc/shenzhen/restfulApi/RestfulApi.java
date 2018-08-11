@@ -44,7 +44,7 @@ public class RestfulApi {
     @Value("${config.taskFlowUrl}")
     String taskFlowUrl;
 
-//    @Value("${config.taskFlowUrl}")
+    @Value("${config.dataTableUrl}")
     String dataTableUrl;
 
     @Value("${config.saveMetaRelationsUrl}")
@@ -93,25 +93,6 @@ public class RestfulApi {
     }
 
 
-    @RequestMapping(value = "/hello/{thing}", method = {RequestMethod.GET, RequestMethod.POST})
-    public String hello(@PathVariable String thing) {
-        System.out.println(dataTableUrl);
-        System.out.println(datasourceUrl);
-        System.out.println(collectionUrl);
-        System.out.println(dataFlowUrl);
-        System.out.println(taskFlowUrl);
-//        System.out.println(thing);
-//        HashMap<String, Object> hashMap = new HashMap<>();
-//        File dir = new File(dirUrl);
-//        File[] files = dir.listFiles();
-//        for (File file : files) {
-//            if (file.isFile()){
-//                System.out.println(file.getPath().contains("DataCollectionExport"));
-//            }
-//        }
-        return "you say :"+thing;
-    }
-
     @RequestMapping(value = "/saveRelationFromDataFlow")
     public String saveRelationFromDataFlow() {
         String result = "{\"returnStatus\": 1, \"returnStatusStr\": \"成功\" }";
@@ -128,12 +109,12 @@ public class RestfulApi {
                 } catch (Exception e) {
                     logger.error(e.getLocalizedMessage());
                     e.printStackTrace();
+                    result = "{\"returnStatus\": 0, \"returnStatusStr\": \"存在失败:"+e.toString()+"\" }";
                     continue;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "{\"returnStatus\": 500,\"returnStatusStr\": \"失败:"+e.toString()+"\" }";
         }
         return result;
     }
@@ -153,12 +134,12 @@ public class RestfulApi {
                     logger.info(s);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    result = "{\"returnStatus\": 0, \"returnStatusStr\": \"存在失败:"+e.toString()+"\" }";
                     continue;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "{\"returnStatus\": 0, \"returnStatusStr\": \"失败:"+e.toString()+"\" }";
         }
         return result;
     }
@@ -166,6 +147,7 @@ public class RestfulApi {
     @RequestMapping("/saveRelationFromTaskFlow")
     public String saveRelationFromTaskFlow(){
 
+        String result = "{\"returnStatus\": 1, \"returnStatusStr\": \"成功\" }";
         try {
             if (dataSource == null || dataCollection == null || tableCodes == null)  this.setCode();
             List<JSONObject> taskList = UnZipFromPath.unzip(taskFlowUrl);
@@ -177,19 +159,18 @@ public class RestfulApi {
                         logger.info("taskFlowParam---->"+taskFlowParam);
                         String s = HttpPost.doPost(saveMetaRelationsUrl, taskFlowParam.toString());
                         logger.info(s);
-
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    result = "{\"returnStatus\": 0, \"returnStatusStr\": \"存在失败:"+e.toString()+"\" }";
                     continue;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "{\"returnStatus\": 0, \"returnStatusStr\": \"失败:"+e.toString()+"\" }";
         }
 
-        return "{\"returnStatus\": 1, \"returnStatusStr\": \"成功\" }";
+        return result;
     }
 
 
@@ -215,7 +196,7 @@ public class RestfulApi {
                 HttpDownload.download(exportUrl,urlMap.get(exportUrl));
             } catch (Exception e) {
                 e.printStackTrace();
-                value = "下载失败";
+                value = "下载存在失败";
                 continue;
             }
         }

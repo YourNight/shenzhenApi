@@ -54,9 +54,6 @@ public class DataFlowParse {
         String targetDatasourceId = targetJson.get("dataSourceId").toString();
         String targetSchema = getSchema(dataCollection, targetTableName, targetDatasourceId);
         String targetDatasourceCode = getResourceCode(dataSource, targetDatasourceId);
-        // Todo  源表和目标表
-//        JSONObject sourceTableCodes = getSourceTableCode(nodesMap, sourceTablesId,dataSource,dataCollection);
-//        JSONObject targetTableCode = getTargetTableCode(targetJson,dataSource,dataCollection);
 
         for (Object o : sourceTablesId) {
             Map<String, Object> params = new HashMap<>();
