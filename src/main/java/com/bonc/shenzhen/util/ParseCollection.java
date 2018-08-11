@@ -13,23 +13,22 @@ import java.util.Map;
 
 public class ParseCollection {
 
-    @Value("${datacollection.url}")
-    String collectionUrl;
+
 
     UnZipFromPath unZipFromPath = new UnZipFromPath();
 
     public static void main(String[] args) {
-        JSONArray jsonArray1 = new ParseCollection().getInter();
-        for (int i = 0; i < jsonArray1.size(); i++) {
-            JSONObject jsonObject1 = (JSONObject) jsonArray1.get(i);
-            String sourceTable = jsonObject1.get("sourceTable").toString();//源表名
-            String resourceCode = jsonObject1.getString("sourceDataSourceId");
-            String sourceTableSchema = jsonObject1.get("sourceTableSchema").toString();//schema
-            System.out.println( "----------" + sourceTable + "---" + sourceTableSchema+"-----"+resourceCode);
-        }
+//        JSONArray jsonArray1 = new ParseCollection().getInter();
+//        for (int i = 0; i < jsonArray1.size(); i++) {
+//            JSONObject jsonObject1 = (JSONObject) jsonArray1.get(i);
+//            String sourceTable = jsonObject1.get("sourceTable").toString();//源表名
+//            String resourceCode = jsonObject1.getString("sourceDataSourceId");
+//            String sourceTableSchema = jsonObject1.get("sourceTableSchema").toString();//schema
+//            System.out.println( "----------" + sourceTable + "---" + sourceTableSchema+"-----"+resourceCode);
+//        }
     }
 
-    public JSONArray getInter() {
+    public JSONArray getInter(String collectionUrl) {
         JSONArray object = null;
         List<JSONObject> list = new ArrayList<>();
         list = unZipFromPath.unzip(collectionUrl);
@@ -57,13 +56,14 @@ public class ParseCollection {
         return object;
     }
 
-    public JSONArray getBoold() {
+    public JSONArray getBoold(String collectionUrl) {
 
+        System.out.println(collectionUrl);
         JSONArray object = null;
         List<JSONObject> list = new ArrayList<>();
         List<Object> param_list = new ArrayList();
         List<Object> param_list2 = new ArrayList();
-        list = unZipFromPath.read();
+        list = UnZipFromPath.unzip(collectionUrl);
         for (int i = 0; i < list.size(); i++) {
             Map map = new HashMap();
             map = list.get(i);

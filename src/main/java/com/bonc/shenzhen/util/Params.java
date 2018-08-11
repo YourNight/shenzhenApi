@@ -13,9 +13,9 @@ public class Params {
     ParseTable parseTable = new ParseTable();
 
 
-    public JSONArray getInterface() {
+    public JSONArray getInterface(String collectionUrl) {
         JSONArray jsonArray11 = null;
-        JSONArray jsonArray1 = parseCollection.getInter();
+        JSONArray jsonArray1 = parseCollection.getInter(collectionUrl);
         JSONArray jsonArray2 = parseTable.getData();
 
         RestfulApi.dataCollection = jsonArray1;
@@ -56,7 +56,7 @@ public class Params {
     }
 
     public static void main(String[] args) throws IOException {
-        new Params().getInterface();
+//        new Params().getInterface();
     }
 
 }

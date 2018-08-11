@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +33,12 @@ public class RestfulApi {
     @Value("${file.url}")
     String url;
 
+    @Value("${config.dirUrl}")
+    String dirUrl;
+
+    @Value("${datacollection.url}")
+    String collectionUrl;
+
     @Value("${config.saveMetaRelationsUrl}")
     String saveMetaRelationsUrl;
     @Value("${config.entityTableCodeUrl}")
@@ -44,8 +51,16 @@ public class RestfulApi {
 
     @RequestMapping(value = "/hello/{thing}", method = {RequestMethod.GET, RequestMethod.POST})
     public String hello(@PathVariable String thing) {
-        System.out.println(thing);
-        HashMap<String, Object> hashMap = new HashMap<>();
+//        System.out.println(thing);
+//        HashMap<String, Object> hashMap = new HashMap<>();
+//        File dir = new File(dirUrl);
+//        File[] files = dir.listFiles();
+//        for (File file : files) {
+//            if (file.isFile()){
+//                System.out.println(file.getPath().contains("DataCollectionExport"));
+//            }
+//        }
+        System.out.println(collectionUrl);
         return "you say :"+thing;
     }
 
@@ -99,7 +114,7 @@ public class RestfulApi {
     @RequestMapping("/sssss")
     public String getParamBoold(){
         ParseCollection parseCollection = new ParseCollection();
-        JSONArray boold = parseCollection.getBoold();
+        JSONArray boold = parseCollection.getBoold(collectionUrl);
         String s = JSONArray.fromObject(boold).toString();
         logger.info("入参------>" + s);
         String result = "";
@@ -114,7 +129,7 @@ public class RestfulApi {
     @RequestMapping("/getEntityTableCodes")
     public String getparam() throws IOException {
         Params params = new Params();
-        JSONArray anInterface = params.getInterface();
+        JSONArray anInterface = params.getInterface(collectionUrl);
         String s = JSONArray.fromObject(anInterface).toString();
         logger.info("入参------>" + s);
         String result = "";
