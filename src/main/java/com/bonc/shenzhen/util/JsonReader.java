@@ -19,6 +19,8 @@ public class JsonReader {
 
     public static List<JSONObject> getPostParams(JSONObject jsonStr,JSONArray dataSource,JSONArray dataCollection,JSONObject tableCodes){
         List<JSONObject> paramsList = new ArrayList<>();
+        //获取工作流ID
+        String workflowId = jsonStr.get("workflowId").toString();
         //获取工作流节点
         JSONObject workflowNode = JSONObject.fromObject(jsonStr.get("workflowNode"));
         //获取所有节点
@@ -26,9 +28,9 @@ public class JsonReader {
         //所有节点的关系Map
         Map<String, String> relationMap = getRelationMap(workflowNode);
         //获取源表和目标表的id
-        Map<String, Set> tableIds = getTableIds(relationMap);
-        Set sourceTablesId = tableIds.get("sourceTablesId");
-        Set targetTablesId = tableIds.get("targetTablesId");
+        Map<String, Set> tableIds = getSourceIds(relationMap);
+        Set sourceTablesId = tableIds.get("sourceIds");
+        Set targetTablesId = tableIds.get("targetIds");
         String targetId = targetTablesId.toArray()[0].toString();
         //对目标源表的列名编号  列名：integer
         Map<String, String> enumMap = getEnumMap(targetId, nodesMap);
@@ -59,28 +61,30 @@ public class JsonReader {
 
         for (Object o : sourceTablesId) {
             Map<String, Object> params = new HashMap<>();
+            Map<String, Object> metaRelations = new HashMap<>();
             String id = o.toString();
             JSONObject tableMetaData = nodesMap.get(id);
             String dataSourceId = tableMetaData.getString("dataSourceId");//华为数据库资源id   用来查询数据库名和schema
 
             // TODO 加入目标表id
 
-            params.put("desEntityId",tableCodes.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName).toString());
-            params.put("desEntityCode",targetTableName);
+            metaRelations.put("desEntityId",tableCodes.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName).toString());
+            metaRelations.put("desEntityCode",targetTableName);
             // todo 加入源表id
             String tableName = tableMetaData.get("modelName").toString();//当前表名
             String schema = getSchema(dataCollection, tableName, dataSourceId);//源表当前schema
             String resourceCode = getResourceCode(dataSource, dataSourceId);
 
-            params.put("srcEntityId",tableCodes.get(resourceCode+"-"+schema+"-"+tableName).toString());
-            params.put("srcEntityCode",tableName);
-            params.put("systemId","");
-            params.put("processId","");
-            params.put("relationType",0);
-            params.put("tenantId","tenantId");
+            metaRelations.put("srcEntityId",tableCodes.get(resourceCode+"-"+schema+"-"+tableName).toString());
+            metaRelations.put("srcEntityCode",tableName);
             List<Map> list = new ArrayList<>();
             list = getMetaRelDetails(id, relationMap, nodesMap, enumMap, list);
-            params.put("metaRelDetails",list);
+            metaRelations.put("metaRelDetails",list);
+            params.put("systemId",2);
+            params.put("processId",workflowId);
+            params.put("relationType",0);
+            params.put("tenantId","tenant1");
+            params.put("metaRelations",metaRelations);
             paramsList.add(JSONObject.fromObject(params));
             System.out.println(JSONObject.fromObject(params));
         }
@@ -277,7 +281,7 @@ public class JsonReader {
      * @param workflowNode 工作流节点
      * @return
      */
-    private static Map<String, String> getRelationMap(JSONObject workflowNode){
+    public static Map<String, String> getRelationMap(JSONObject workflowNode){
         //获取节点关系
         JSONArray edges = JSONArray.fromObject(workflowNode.get("edges"));
         //  将节点关系存到map中
@@ -297,7 +301,7 @@ public class JsonReader {
      * @param workflowNode 工作流节点
      * @return
      */
-    private static Map<String,JSONObject> getNodeMap(JSONObject workflowNode){
+    public static Map<String,JSONObject> getNodeMap(JSONObject workflowNode){
         JSONArray nodesList = JSONArray.fromObject(workflowNode.get("nodes"));//所有节点存放的List
         Map<String,JSONObject> nodesMap = new HashMap<>();//将节点List转为节点Map,便于使用get(id),key为id
         for (Object nodeStr : nodesList) {
@@ -334,7 +338,7 @@ public class JsonReader {
      * @param relationMap
      * @return
      */
-    private static Map<String, Set> getTableIds(Map<String, String> relationMap){
+    public static Map<String, Set> getSourceIds(Map<String, String> relationMap){
         Map<String, Set> tablesMap = new HashMap<>();
         Set<String> sourceIds = null;// 存放所有sourceid
         Set<String> targetIds = new HashSet<>();// 存放所有targetid
@@ -350,8 +354,8 @@ public class JsonReader {
         set2.addAll(targetIds);
         Set sourceTablesId = getDifferent(set1, set2);//源表id
         Set targetTablesId = getDifferent(targetIds, sourceIds);//目标表id
-        tablesMap.put("sourceTablesId",sourceTablesId);
-        tablesMap.put("targetTablesId",targetTablesId);
+        tablesMap.put("sourceIds",sourceTablesId);
+        tablesMap.put("targetIds",targetTablesId);
         return tablesMap;
     }
 
@@ -391,7 +395,8 @@ public class JsonReader {
     public static void main(String[] args) {
 //        getPostParams(getJson("C:/Users/BONC/Desktop/018950/194a96a6-6e84-4f17-a5c8-b58a3f640a62.json"));
 //        System.out.println(getJson("C:/Users/BONC/Desktop/018950/log.txt"));
-        System.out.println(getJson("C:/Users/BONC/Desktop/018950/194a96a6-6e84-4f17-a5c8-b58a3f640a62.json"));
+//        System.out.println(getJson("C:/Users/BONC/Desktop/018950/194a96a6-6e84-4f17-a5c8-b58a3f640a62.json"));
 //        System.out.println(ClassLoader.getSystemResource(""));
+//        System.out.println(entityTableCodeUrl);
     }
 }

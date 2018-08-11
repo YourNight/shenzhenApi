@@ -1,5 +1,8 @@
 package com.bonc.shenzhen.util;
 
+import net.sf.json.JSONObject;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.http.client.HttpClient;
 import org.hibernate.validator.internal.util.privilegedactions.GetMethod;
 
 import java.io.*;
@@ -7,10 +10,13 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static jdk.nashorn.tools.Shell.SUCCESS;
 
@@ -94,14 +100,17 @@ public class HttpDownload {
         }
 
     }
-    public void test2() throws Exception{
+    public static  void test2() throws Exception{
+//             Protocol myhttps = new Protocol("https", new MySSLSocketFactory(), 443);
+//    Protocol.registerProtocol("https", myhttps);
+//        System.setProperty("javax.net.ssl.trustStore", "C:\\Users\\BONC\\Desktop\\jssecacerts");
         System.out.println("test2进来了");
         SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
         String timestr=sdf.format(new Date());
         String key="bc3d7bc7b0c2409ebaba6127a7298ba8";
 
 
-        String getURL="请求的url";               //这写你自己的
+        String getURL="http://172.16.36.161:8082/DataFlowExport_20180710100847.zip";               //这写你自己的
         URL getUrl = new URL(getURL);
 
 // 根据拼凑的URL，打开连接，URL.openConnection函数会根据URL的类型，
@@ -116,13 +125,58 @@ public class HttpDownload {
         int status = connection.getResponseCode();
         if (status == 200) {
             DataInputStream in = new DataInputStream( connection.getInputStream());
-            DataOutputStream out = new DataOutputStream(new FileOutputStream("d:\\a\\c.zip"));
-            byte[] buffer = new byte[400000];
-            int count = 0;
-            while ((count = in.read(buffer)) > 0) {
-                out.write(buffer, 0, count);
+
+
+
+
+
+            try {
+                Charset gbk = Charset.forName("gbk");
+                ZipInputStream Zin=new ZipInputStream(in,gbk);//输入源zip路径
+                BufferedInputStream Bin=new BufferedInputStream(Zin);
+                ZipEntry entry;
+                while((entry = Zin.getNextEntry())!=null){
+                    try {
+                        if (!entry.isDirectory()){
+                            System.out.println(entry.getName());
+                            if (!entry.getName().contains("DirMapping")){
+                                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Bin));
+                                String str = "";
+                                String s;
+                                while ((s = bufferedReader.readLine())!=null) {
+                                    str = str + s ;
+                                }
+                                System.out.println(str);
+//                                jsonList.add(JSONObject.fromObject(str));
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        continue;
+                    }
+                }
+                Bin.close();
+                Zin.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            out.close();
+
+
+
+
+
+
+
+
+//            DataOutputStream out = new DataOutputStream(new FileOutputStream("C:\\Users\\BONC\\Desktop\\018950\\c.zip"));
+//            byte[] buffer = new byte[400000];
+//            int count = 0;
+//            while ((count = in.read(buffer)) > 0) {
+//                out.write(buffer, 0, count);
+//            }
+//            out.close();
             in.close();
         } else {
             String strResponse = "error";
@@ -133,8 +187,14 @@ public class HttpDownload {
     public static void main(String[] args) {
 
         // 下载文件测试
-        downloadFile("http://172.16.74.74:8080/restApi/Koala.jpg", "C:/Users/BONC/AppData/Local/Temp/tomcat-docbase.6673209967711873770.8080/");
+//        downloadFile("http://172.16.74.74:8080/restApi/Koala.jpg", "C:/Users/BONC/AppData/Local/Temp/tomcat-docbase.6673209967711873770.8080/");
+//        System.out.println();
 
+        try {
+            test2();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
