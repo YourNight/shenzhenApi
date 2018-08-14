@@ -23,19 +23,21 @@ public class Params {
                 JSONObject jsonObject2 = (JSONObject) dataSource.get(j);
                 Map<String, String> map = (Map<String, String>) jsonObject2;
                 Set<String> set = map.keySet();
-                String resouceCode = map.get(set.toArray()[0].toString());
+                String resourceCode = map.get(set.toArray()[0].toString());
                 String id = set.toArray()[0].toString();
                 if (sourceDataSourceId.equals(id)) {
                     Map map1 = new HashMap();
                     map1.put("tableCode", sourceTable);
-                    map1.put("schema", sourceTableSchema);
-                    map1.put("resourceCode", resouceCode);
+//                    map1.put("schema", sourceTableSchema);
+                    map1.put("schema", "default");
+                    map1.put("resourceCode", resourceCode);
                     list1.add(map1);
 
                     Map map2 = new HashMap();
                     map2.put("tableCode", targetTable);
-                    map2.put("schema", sourceTableSchema);
-                    map2.put("resourceCode", resouceCode);
+//                    map2.put("schema", sourceTableSchema);
+                    map2.put("schema", "default");
+                    map2.put("resourceCode", resourceCode);
                     list1.add(map2);
                 }
             }

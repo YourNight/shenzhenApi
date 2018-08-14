@@ -64,14 +64,15 @@ public class DataFlowParse {
 
             // TODO 加入目标表id
 
-            metaRelations.put("desEntityId",tableCodes.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName)!=null?tableCodes.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName).toString():"");
+//            metaRelations.put("desEntityId",tableCodes.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName)!=null?tableCodes.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName).toString():"");
+            metaRelations.put("desEntityId",tableCodes.get(targetDatasourceCode+"-default-"+targetTableName)!=null?tableCodes.get(targetDatasourceCode+"-default-"+targetTableName).toString():"");
             metaRelations.put("desEntityCode",targetTableName);
             // todo 加入源表id
             String tableName = tableMetaData.get("modelName").toString();//当前表名
             String schema = getSchema(dataCollection, tableName, dataSourceId);//源表当前schema
             String resourceCode = getResourceCode(dataSource, dataSourceId);
 
-            metaRelations.put("srcEntityId",tableCodes.get(resourceCode+"-"+schema+"-"+tableName)!=null?tableCodes.get(resourceCode+"-"+schema+"-"+tableName).toString():"");
+            metaRelations.put("srcEntityId",tableCodes.get(resourceCode+"-default-"+tableName)!=null?tableCodes.get(resourceCode+"-default-"+tableName).toString():"");
             metaRelations.put("srcEntityCode",tableName);
             List<Map> list = new ArrayList<>();
             list = getMetaRelDetails(id, relationMap, nodesMap, enumMap, list);

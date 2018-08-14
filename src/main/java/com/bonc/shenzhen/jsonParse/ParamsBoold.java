@@ -47,8 +47,10 @@ public class ParamsBoold {
             }
             Map relationMap = new HashMap();
 
-            String desId = tableCodes.get(resourceCode + "-" + schema + "-" + targetTable)!=null?tableCodes.get(resourceCode + "-" + schema + "-" + targetTable).toString():"";
-            String srcId = tableCodes.get(resourceCode + "-" + schema + "-" + sourceTable)!=null?tableCodes.get(resourceCode + "-" + schema + "-" + sourceTable).toString():"";
+//            String desId = tableCodes.get(resourceCode + "-" + schema + "-" + targetTable)!=null?tableCodes.get(resourceCode + "-" + schema + "-" + targetTable).toString():"";
+            String desId = tableCodes.get(resourceCode + "-default-" + targetTable)!=null?tableCodes.get(resourceCode + "-default-" + targetTable).toString():"";
+//            String srcId = tableCodes.get(resourceCode + "-" + schema + "-" + sourceTable)!=null?tableCodes.get(resourceCode + "-" + schema + "-" + sourceTable).toString():"";
+            String srcId = tableCodes.get(resourceCode + "-default-" + sourceTable)!=null?tableCodes.get(resourceCode + "-default-" + sourceTable).toString():"";
             relationMap.put("desEntityId", desId);
             relationMap.put("desEntityCode", targetTable);
             relationMap.put("srcEntityId", srcId);

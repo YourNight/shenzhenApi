@@ -53,6 +53,12 @@ public class RestfulApi {
     @Value("${config.entityTableCodeUrl}")
     String entityTableCodeUrl;
 
+    @Value("${config.addEntityTableUrl}")
+    String addEntityTableUrl;
+
+    @Value("${config.addDatabaseUrl}")
+    String addDatabaseUrl;
+
     @Value("${config.downloadPath.datatable}")
     String dataTableExport;
 
@@ -170,6 +176,38 @@ public class RestfulApi {
             e.printStackTrace();
         }
 
+        return result;
+    }
+
+    @RequestMapping("/saveDatabaseAndTable")
+    public String saveDatabaseAndTable(){
+        String result = "{\"returnStatus\": 1, \"returnStatusStr\": \"成功\" }";
+        List<JSONObject> dataSourceList = UnZipFromPath.unzip(datasourceUrl);
+        List<JSONObject> tableList = UnZipFromPath.unzip(dataTableUrl);
+        Map<String, String> idNameMap = DatabaseParse.getIdNameMap(dataSourceList);
+        List<JSONObject> databaseParams = DatabaseParse.getDatabaseParams(dataSourceList);
+        System.out.println(databaseParams.size());
+        List<JSONObject> tableParams = DataTableParse.getTableParams(tableList, idNameMap);
+        for (JSONObject databaseParam : databaseParams) {
+            try {
+                String s = HttpPost.doPost(addDatabaseUrl, databaseParam.toString());
+                logger.info("新增数据库id---->"+s);
+            } catch (Exception e) {
+                e.printStackTrace();
+                result = "{\"returnStatus\": 0, \"returnStatusStr\": \"存在失败:"+e.toString()+"\" }";
+                continue;
+            }
+        }
+        for (JSONObject tableParam : tableParams) {
+            try {
+                String s = HttpPost.doPost(addEntityTableUrl, tableParam.toString());
+                logger.info("新增实体表id---->"+s);
+            } catch (Exception e) {
+                result = "{\"returnStatus\": 0, \"returnStatusStr\": \"存在失败:"+e.toString()+"\" }";
+                e.printStackTrace();
+                continue;
+            }
+        }
         return result;
     }
 
