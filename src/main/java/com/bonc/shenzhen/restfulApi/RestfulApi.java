@@ -75,6 +75,11 @@ public class RestfulApi {
     @Value("${config.downloadPath.taskflow}")
     String taskFlowExport;
 
+    @Value("${config.databaseDir}")
+    String databaseDir;
+
+    @Value("${config.tableDir}")
+    String tableDir;
 
     public static Map<String, String> tableDatabaseIdMap;
     public static Map<String, String> databaseIdNameMap;
@@ -194,9 +199,9 @@ public class RestfulApi {
         List<JSONObject> dataSourceList = UnZipFromPath.unzip(datasourceUrl);
         List<JSONObject> tableList = UnZipFromPath.unzip(dataTableUrl);
         Map<String, String> idNameMap = DatabaseParse.getIdNameMap(dataSourceList);
-        List<JSONObject> databaseParams = DatabaseParse.getDatabaseParams(dataSourceList);
+        List<JSONObject> databaseParams = DatabaseParse.getDatabaseParams(dataSourceList,databaseDir);
         System.out.println(databaseParams.size());
-        List<JSONObject> tableParams = DataTableParse.getTableParams(tableList, idNameMap);
+        List<JSONObject> tableParams = DataTableParse.getTableParams(tableList, idNameMap,tableDir);
         for (JSONObject databaseParam : databaseParams) {
             try {
                 String s = HttpPost.doPost(addDatabaseUrl, databaseParam.toString());

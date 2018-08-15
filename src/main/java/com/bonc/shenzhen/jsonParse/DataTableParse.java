@@ -12,7 +12,7 @@ import java.util.Map;
  * Created by liuhaolong on 2018/8/13.
  */
 public class DataTableParse {
-    public static List<JSONObject> getTableParams(List<JSONObject> tableJsonList,Map<String,String> idNameMap){
+    public static List<JSONObject> getTableParams(List<JSONObject> tableJsonList,Map<String,String> idNameMap,String tableDir){
         List<JSONObject> tableParams = new ArrayList<>();
         for (JSONObject tableJson : tableJsonList) {
             Map<String, Object> po = new HashMap<>();
@@ -22,7 +22,7 @@ public class DataTableParse {
             String dataSourceName =  idNameMap.get(dataSourceId)!=null?idNameMap.get(dataSourceId):"";
             tableParam.put("code",name);
             tableParam.put("name",name);
-            tableParam.put("metaDirTree","深圳测试用例/table");
+            tableParam.put("metaDirTree",tableDir);
             tableParam.put("subResouceCode",dataSourceName);
             tableParam.put("subUser","default");
             tableParam.put("tableTypeId","96305");

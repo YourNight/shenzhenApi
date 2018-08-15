@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class DatabaseParse {
 
-    public static List<JSONObject> getDatabaseParams(List<JSONObject> databaseJsonList){
+    public static List<JSONObject> getDatabaseParams(List<JSONObject> databaseJsonList,String dtabaseDir){
         List<JSONObject> list = new ArrayList<>();
 
         for (JSONObject database : databaseJsonList) {
@@ -26,7 +26,7 @@ public class DatabaseParse {
 
             databaseParamMap.put("code",name);
             databaseParamMap.put("name",name);
-            databaseParamMap.put("metaDirTree","深圳测试用例/表");
+            databaseParamMap.put("metaDirTree",dtabaseDir);
             databaseParamMap.put("dbTypeName",getDbType(dbTypeName));
             databaseParamMap.put("dbCharset","UTF-8");
             databaseParamMap.put("ip","172.36.11.9");
