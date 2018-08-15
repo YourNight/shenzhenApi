@@ -258,4 +258,15 @@ public class RestfulApi {
         if (b) return "删除成功";
         return "删除失败";
     }
+
+    @RequestMapping("/startParse")
+    public String startParse(){
+        this.getZip();
+        this.setCode();
+        this.saveDatabaseAndTable();
+        this.saveRelationFromDataCollection();
+        this.saveRelationFromDataFlow();
+        this.saveRelationFromTaskFlow();
+        return "{\"returnStatus\": 1, \"returnStatusStr\": \"成功\" }";
+    }
 }
