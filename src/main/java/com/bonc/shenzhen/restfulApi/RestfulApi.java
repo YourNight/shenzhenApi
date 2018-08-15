@@ -105,6 +105,7 @@ public class RestfulApi {
 
     @RequestMapping(value = "/saveRelationFromDataFlow")
     public String saveRelationFromDataFlow() {
+        logger.info("**********************数据流保存血缘关系开始**********************");
         String result = "{\"returnStatus\": 1, \"returnStatusStr\": \"成功\" }";
         try {
             if (tableDatabaseIdMap == null || databaseIdNameMap == null || tableCodes == null)  this.setCode();
@@ -113,6 +114,7 @@ public class RestfulApi {
                 try {
                     List<JSONObject> postParams = DataFlowParse.getPostParams(json, databaseIdNameMap,tableCodes);
                     for (JSONObject postParam : postParams) {
+                        logger.info("dataFlowParams---->"+postParam);
                         String s = HttpPost.doPost(saveMetaRelationsUrl, postParam.toString());
                         logger.info(s);
                     }
@@ -126,6 +128,7 @@ public class RestfulApi {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        logger.info("**********************数据流保存血缘关系结束**********************");
         return result;
     }
 
@@ -133,13 +136,14 @@ public class RestfulApi {
 
     @RequestMapping("/saveRelationFromDataCollection")
     public String saveRelationFromDataCollection(){
+        logger.info("**********************数据采集保存血缘关系开始**********************");
         String result = "{\"returnStatus\": 1, \"returnStatusStr\": \"成功\" }";
         try {
             if (tableDatabaseIdMap == null || databaseIdNameMap == null || tableCodes == null)  this.setCode();
             JSONArray boold = ParamsBoold.getBoold(collectionUrl,tableCodes,databaseIdNameMap);
             for (Object o : boold) {
-                logger.info(o.toString());
                 try {
+                    logger.info("dataCollectionParams---->"+o.toString());
                     String s = HttpPost.doPost(saveMetaRelationsUrl, o.toString());
                     logger.info(s);
                 } catch (Exception e) {
@@ -151,12 +155,13 @@ public class RestfulApi {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        logger.info("**********************数据采集保存血缘关系结束**********************");
         return result;
     }
 
     @RequestMapping("/saveRelationFromTaskFlow")
     public String saveRelationFromTaskFlow(){
-
+        logger.info("**********************任务流保存血缘关系开始**********************");
         String result = "{\"returnStatus\": 1, \"returnStatusStr\": \"成功\" }";
         try {
             if (tableDatabaseIdMap == null || databaseIdNameMap == null || tableCodes == null)  this.setCode();
@@ -179,7 +184,7 @@ public class RestfulApi {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        logger.info("**********************任务流保存血缘关系结束**********************");
         return result;
     }
 
@@ -235,7 +240,9 @@ public class RestfulApi {
 
         for (String exportUrl : urlMap.keySet()) {
             try {
+                logger.info("开始下载--->"+exportUrl);
                 HttpDownload.download(exportUrl,urlMap.get(exportUrl));
+                logger.info("下载结束");
             } catch (Exception e) {
                 e.printStackTrace();
                 value = "下载存在失败";

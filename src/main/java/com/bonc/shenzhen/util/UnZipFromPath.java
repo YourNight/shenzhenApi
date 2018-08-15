@@ -50,7 +50,7 @@ public class UnZipFromPath {
                                 str = str + s ;
                             }
                             jsonList.add(JSONObject.fromObject(str));
-                            System.out.println(JSONObject.fromObject(str));
+//                            System.out.println(JSONObject.fromObject(str));
                         }
                     }
                 }catch (Exception e){
@@ -66,8 +66,7 @@ public class UnZipFromPath {
             e.printStackTrace();
         }
         long endTime=System.currentTimeMillis();
-        System.out.println("耗费时间： "+(endTime-startTime)+" ms");
-        System.out.println(jsonList.size());
+        System.out.println("解析共"+jsonList.size()+"条\n耗费时间： "+(endTime-startTime)+" ms");
         return jsonList;
     }
 }
