@@ -267,8 +267,8 @@ public class RestfulApi {
     @RequestMapping("/startParse")
     public String startParse(){
         this.getZip();
-        this.setCode();
         this.saveDatabaseAndTable();
+        this.setCode();
         this.saveRelationFromDataCollection();
         this.saveRelationFromDataFlow();
         this.saveRelationFromTaskFlow();
