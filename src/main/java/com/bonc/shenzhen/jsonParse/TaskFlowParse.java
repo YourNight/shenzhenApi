@@ -63,7 +63,7 @@ public class TaskFlowParse {
                     typeName = taskTypeId.get(key);
                 }
             }
-            String taskId=nodeJson.get(typeName).toString();
+            String taskId=nodeJson.get(typeName)!=null?nodeJson.get(typeName).toString():"";
             if (taskId.equals(workflowId)){
                 List<JSONObject> postParams = DataFlowParse.getPostParams(dataflow, RestfulApi.databaseIdNameMap, RestfulApi.tableCodes);
                 taskParams.addAll(postParams);
