@@ -1,10 +1,8 @@
 package com.bonc.shenzhen.jsonParse;
 
-import com.bonc.shenzhen.util.UnZipFromPath;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import javax.jws.Oneway;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +47,6 @@ public class DataTableParse {
                 columnTemp.put("zoneType","无");
                 columnTemp.put("ord",i);
                 columnTemp.put("defaultValue","");
-//                columnTemp.put("subDimensionCode","");
                 columnTemp.put("valueType","本期值");
                 columnTemp.put("alias","无");
                 columnTemp.put("columnforeignName","无");
@@ -64,9 +61,15 @@ public class DataTableParse {
         return tableParams;
     }
 
-    public static void main(String[] args) {
-        Map<String, String> idNameMap = DatabaseParse.getIdNameMap(UnZipFromPath.unzip("C:\\Users\\BONC\\Desktop\\018950\\DatasourceExport_20180710094013.zip"));
-        List<JSONObject> tableParams = getTableParams(UnZipFromPath.unzip("C:\\Users\\BONC\\Desktop\\018950\\DataTableExport_20180710095550.zip"), idNameMap);
-        tableParams.forEach(System.out::println);
+
+    public static Map<String, String> getTableDatabaseIdMap(List<JSONObject> tableJsonList){
+        Map<String, String> tableDatabaseIdMap = new HashMap<>();
+        for (JSONObject tableJson : tableJsonList) {
+            String tableName = tableJson.get("name").toString();
+            String dataSourceId = tableJson.get("dataSourceId").toString();
+            tableDatabaseIdMap.put(tableName,dataSourceId);
+        }
+        return tableDatabaseIdMap;
     }
+
 }

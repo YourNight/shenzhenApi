@@ -16,7 +16,7 @@ public class DataFlowParse {
 
 
 
-    public static List<JSONObject> getPostParams(JSONObject jsonStr,JSONArray dataSource,JSONArray dataCollection,JSONObject tableCodes){
+    public static List<JSONObject> getPostParams(JSONObject jsonStr,Map<String, String> databaseIdNameMap,JSONObject tableCodes){
         List<JSONObject> paramsList = new ArrayList<>();
         //获取工作流ID
         String workflowId = jsonStr.get("workflowId").toString();
@@ -34,102 +34,50 @@ public class DataFlowParse {
         //对目标源表的列名编号  列名：integer
         Map<String, String> enumMap = getEnumMap(targetId, nodesMap);
 
-
-//        System.out.println("源表id："+sourceTablesId);
-//        System.out.println("目标表id："+targetTablesId);
-//        System.out.println(map);
-//        getSourceIdsAndResultId(map);
-//        System.out.println("所有节点的map：");
-//        nodesMap.forEach((a,b)->{
-//            System.out.println(a+":"+b);
-//        });
-//        System.out.println(nodesMap.get("83"));
-//        System.out.println(JSONObject.fromObject(enumMap));
-
-
-
-
         JSONObject targetJson = nodesMap.get(targetId);
         String targetTableName = targetJson.get("modelName").toString();
         String targetDatasourceId = targetJson.get("dataSourceId").toString();
-        String targetSchema = getSchema(dataCollection, targetTableName, targetDatasourceId);
-        String targetDatasourceCode = getResourceCode(dataSource, targetDatasourceId);
+        String targetDatasourceCode = databaseIdNameMap.get(targetDatasourceId);
 
+        Map<String, Object> params = new HashMap<>();
+        List<Map> metaRelationsList = new ArrayList<>();
         for (Object o : sourceTablesId) {
-            Map<String, Object> params = new HashMap<>();
             Map<String, Object> metaRelations = new HashMap<>();
             String id = o.toString();
             JSONObject tableMetaData = nodesMap.get(id);
             String dataSourceId = tableMetaData.getString("dataSourceId");//华为数据库资源id   用来查询数据库名和schema
 
             // TODO 加入目标表id
-
-//            metaRelations.put("desEntityId",tableCodes.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName)!=null?tableCodes.get(targetDatasourceCode+"-"+targetSchema+"-"+targetTableName).toString():"");
             metaRelations.put("desEntityId",tableCodes.get(targetDatasourceCode+"-default-"+targetTableName)!=null?tableCodes.get(targetDatasourceCode+"-default-"+targetTableName).toString():"");
             metaRelations.put("desEntityCode",targetTableName);
             // todo 加入源表id
             String tableName = tableMetaData.get("modelName").toString();//当前表名
-            String schema = getSchema(dataCollection, tableName, dataSourceId);//源表当前schema
-            String resourceCode = getResourceCode(dataSource, dataSourceId);
+            String resourceCode = databaseIdNameMap.get(dataSourceId);
 
             metaRelations.put("srcEntityId",tableCodes.get(resourceCode+"-default-"+tableName)!=null?tableCodes.get(resourceCode+"-default-"+tableName).toString():"");
             metaRelations.put("srcEntityCode",tableName);
             List<Map> list = new ArrayList<>();
             list = getMetaRelDetails(id, relationMap, nodesMap, enumMap, list);
             metaRelations.put("metaRelDetails",list);
-            params.put("systemId",2);
-            params.put("processId",workflowId);
-            params.put("relationType",0);
-            params.put("tenantId","tenant1");
-            params.put("metaRelations",metaRelations);
-            Map<String , Object> paramsObject = new HashMap<>();
-            paramsObject.put("token","1");
-            paramsObject.put("objectInfo",params);
-            paramsList.add(JSONObject.fromObject(paramsObject));
-            logger.info(JSONObject.fromObject(paramsObject));
+            metaRelationsList.add(metaRelations);
         }
+        params.put("systemId",2);
+        params.put("processId",workflowId);
+        params.put("relationType",0);
+        params.put("tenantId","tenant1");
+        params.put("metaRelations",metaRelationsList);
+        Map<String , Object> paramsObject = new HashMap<>();
+        paramsObject.put("token","1");
+        paramsObject.put("objectInfo",params);
+        paramsList.add(JSONObject.fromObject(paramsObject));
+        logger.info(JSONObject.fromObject(paramsObject));
         return  paramsList;
 
     }
 
 
-    /**
-     * 通过databaseID和tableName来获取对应的Schema
-     * @param dataCollection 数据采集结果的集合
-     * @param tableName 表名
-     * @param dataSourceId 数据库资源id
-     * @return
-     */
-    private static String getSchema(JSONArray dataCollection, String tableName, String dataSourceId) {
-        String schema = "";
-        for (Object o : dataCollection) {
-            JSONObject data = JSONObject.fromObject(o);
-            if (dataSourceId.equals(data.get("sourceDataSourceId").toString())&&(tableName.equals(data.get("targetTable").toString())||tableName.equals(data.get("sourceTable").toString()))){
-                schema = data.get("sourceTableSchema").toString();
-                return schema;
-            }
-        }
-        return schema;
-    }
 
 
-    /**
-     * 通过dataSourceId获取databaseCode
-     * @param dataSource 数据源集合
-     * @param dataSourceId 数据源id
-     * @return String
-     */
-    private static String getResourceCode(JSONArray dataSource, String dataSourceId) {
-        String dataSourceName = "";
-        for (Object ds : dataSource) {
-            JSONObject database = JSONObject.fromObject(ds);
-            if (database.containsKey(dataSourceId)){
-                dataSourceName = database.get(dataSourceId).toString();
-                return dataSourceName;
-            }
-        }
-        return dataSourceName;
-    }
 
     /**
      * 获取metaRelDetails
@@ -159,8 +107,7 @@ public class DataFlowParse {
                     JSONObject column = JSONObject.fromObject(columnObj);
                     for (Map map : columnList) {
                         String desColumn = map.get("desColumn").toString();//前一个节点的outputname
-                        if (desColumn.equals(column.get("inputName")!=null?column.get("inputName").toString().toUpperCase():"")) {//如果前一个节点的outputname和此次的inputname相同
-//                            map.put("desColumn", column.getString("outputName"));//重新将desColumn设置为此次的outputname
+                        if (desColumn.equals(column.get("inputName")!=null?column.get("inputName").toString():"")) {//如果前一个节点的outputname和此次的inputname相同
                             Object config = column.get("expressionConfig");//获取表达式对象
                             Map calcRule = (Map) map.get("calcRule");
                             if (config != null) {//表达式对象不为空
@@ -179,9 +126,9 @@ public class DataFlowParse {
                 for (Object columnObj : columns) {//遍历
                     JSONObject column = JSONObject.fromObject(columnObj);
                     Map<String, Object> tempMap = new HashMap<>();
-                    String inputName = column.get("inputName").toString().toUpperCase();
+                    String inputName = column.get("inputName").toString();
                     tempMap.put("srcColumn", inputName);//源列名
-                    tempMap.put("desColumn", column.get("outputName").toString().toUpperCase());//目标列名
+                    tempMap.put("desColumn", column.get("outputName").toString());//目标列名
                     tempMap.put("ruleType", 0);
                     Map<String, Object> rule = new HashMap<>();
                     rule.put("id", enumMap.get(inputName) != null ? enumMap.get(inputName) : "");//判断是否在目标table中存在该字段
@@ -265,7 +212,7 @@ public class DataFlowParse {
         int i= 1;
         for (Object columnObj : columns) {
             JSONObject column = JSONObject.fromObject(columnObj);
-            String columnName = column.get("outputName").toString().toUpperCase();
+            String columnName = column.get("outputName").toString();
             enumMap.put(columnName,i+"");
             i++;
         }

@@ -13,14 +13,6 @@ import java.util.Map;
  */
 public class DatabaseParse {
 
-
-    private static List<JSONObject> getDatabaseList(){
-        List<JSONObject> databaseJsonList = UnZipFromPath.unzip("C:\\Users\\BONC\\Desktop\\018950\\DatasourceExport_20180710094013.zip");
-        List<JSONObject> databaseParams = getDatabaseParams(databaseJsonList);
-        System.out.println(databaseParams);
-        return databaseParams;
-    }
-
     public static List<JSONObject> getDatabaseParams(List<JSONObject> databaseJsonList){
         List<JSONObject> list = new ArrayList<>();
 
@@ -74,31 +66,5 @@ public class DatabaseParse {
             idNameMap.put(id,name);
         }
         return idNameMap;
-    }
-
-/*    {
-            "id" : "4df0a335-8dfb-4ab8-afc7-f62a72c4b042",
-            "name" : "qingdao_oracle_goal",
-            "description" : "t",
-            "createDate" : 1530185767633,
-            "creatorId" : -1,
-            "readonlyUserType" : "UseDefault",
-            "readwriteonlyUserType" : "UseDefault",
-            "manageUserType" : "UseDefault",
-            "type" : "Oracle",
-            "charset" : "UTF-8",
-            "database" : "",
-            "hdfsPath" : "",
-            "hbaseNamespace" : "",
-            "modifyDate" : -1,
-            "modifyUserId" : -1,
-            "status" : 1,
-            "lastTestConnectionDate" : 1530186881550
-    }*/
-
-
-
-    public static void main(String[] args) {
-        getDatabaseList();
     }
 }

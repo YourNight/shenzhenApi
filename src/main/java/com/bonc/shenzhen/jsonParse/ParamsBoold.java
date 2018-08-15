@@ -11,18 +11,18 @@ import java.util.Map;
 
 public class ParamsBoold {
 
-    public static  JSONArray getBoold(String collectionUrl ,JSONObject tableCodes) {
+    public static  JSONArray getBoold(String collectionUrl ,JSONObject tableCodes,Map<String, String> databaseIdNameMap) {
 
-        JSONArray object = null;
-        List<Object> metaRelations = new ArrayList();
+
         List<Object> saveRelationParams = new ArrayList();
         List<JSONObject> list  = UnZipFromPath.unzip(collectionUrl);
-
         for (int i = 0; i < list.size(); i++) {
+            List<Object> metaRelations = new ArrayList();
             JSONObject dataCollectionJson = list.get(i);
             String sourceTable = dataCollectionJson.getString("sourceTable");
             String targetTable = dataCollectionJson.getString("targetTable");
-            String resourceCode = dataCollectionJson.getString("sourceDataSourceId");
+            String resourceId = dataCollectionJson.getString("sourceDataSourceId");
+            String targetResourceId = dataCollectionJson.getString("targetDataSourceId");
             String schema = dataCollectionJson.getString("sourceTableSchema");
             String dataCollectionTaskId = dataCollectionJson.getString("dataCollectionTaskId");
             JSONArray fieldMappings = dataCollectionJson.getJSONArray("fieldMappings");
@@ -47,8 +47,9 @@ public class ParamsBoold {
             }
             Map relationMap = new HashMap();
 
-//            String desId = tableCodes.get(resourceCode + "-" + schema + "-" + targetTable)!=null?tableCodes.get(resourceCode + "-" + schema + "-" + targetTable).toString():"";
-            String desId = tableCodes.get(resourceCode + "-default-" + targetTable)!=null?tableCodes.get(resourceCode + "-default-" + targetTable).toString():"";
+            String resourceCode = databaseIdNameMap.get(resourceId);
+            String targetResourceCode = databaseIdNameMap.get(targetResourceId);
+            String desId = tableCodes.get(targetResourceCode + "-default-" + targetTable)!=null?tableCodes.get(targetResourceCode + "-default-" + targetTable).toString():"";
 //            String srcId = tableCodes.get(resourceCode + "-" + schema + "-" + sourceTable)!=null?tableCodes.get(resourceCode + "-" + schema + "-" + sourceTable).toString():"";
             String srcId = tableCodes.get(resourceCode + "-default-" + sourceTable)!=null?tableCodes.get(resourceCode + "-default-" + sourceTable).toString():"";
             relationMap.put("desEntityId", desId);
@@ -68,10 +69,9 @@ public class ParamsBoold {
             paramObject.put("token","1");
             paramObject.put("objectInfo",objectInfo);
             saveRelationParams.add(paramObject);
-            object = JSONArray.fromObject(saveRelationParams);
         }
 
-        return object;
+        return JSONArray.fromObject(saveRelationParams);
     }
 
 }

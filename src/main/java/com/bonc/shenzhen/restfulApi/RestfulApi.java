@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,27 +76,30 @@ public class RestfulApi {
     String taskFlowExport;
 
 
-    public static JSONArray dataSource;
-    public static JSONArray dataCollection;
+    public static Map<String, String> tableDatabaseIdMap;
+    public static Map<String, String> databaseIdNameMap;
     public static JSONObject tableCodes;
 
     @RequestMapping("/setCode")
-    public void setCode(){
-        Params params = new Params();
+    public String setCode(){
         String result = "";
-        dataCollection = ParseCollection.getInter(collectionUrl);
-        dataSource = ParseTable.getData(datasourceUrl);
-        JSONArray anInterface = params.getInterface(dataSource,dataCollection);
+        tableDatabaseIdMap = DataTableParse.getTableDatabaseIdMap(UnZipFromPath.unzip(dataTableUrl));
+        databaseIdNameMap = DatabaseParse.getIdNameMap(UnZipFromPath.unzip(datasourceUrl));
+        List<Map> queryTableCodeParams = new ArrayList<>();
+        for (String tableName : tableDatabaseIdMap.keySet()) {
+            Map<String, Object> queryParam = new HashMap<>();
+            queryParam.put("tableCode",tableName);
+            queryParam.put("schema","default");
+            queryParam.put("resourceCode",databaseIdNameMap.get(tableDatabaseIdMap.get(tableName)));
+            queryTableCodeParams.add(queryParam);
+        }
         try {
-            result = HttpPost.doPost(entityTableCodeUrl, anInterface.toString());
+            result = HttpPost.doPost(entityTableCodeUrl, JSONArray.fromObject( queryTableCodeParams).toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
         tableCodes = JSONObject.fromObject(result);
-
-        logger.info("dataCollection----->"+dataCollection);
-        logger.info("dataSource----->"+dataSource);
-        logger.info("tableCodes----->"+tableCodes);
+        return tableCodes.toString();
     }
 
 
@@ -103,11 +107,11 @@ public class RestfulApi {
     public String saveRelationFromDataFlow() {
         String result = "{\"returnStatus\": 1, \"returnStatusStr\": \"成功\" }";
         try {
-            if (dataSource == null || dataCollection == null || tableCodes == null)  this.setCode();
+            if (tableDatabaseIdMap == null || databaseIdNameMap == null || tableCodes == null)  this.setCode();
             List<JSONObject> jsonList = UnZipFromPath.unzip(dataFlowUrl);
             for (JSONObject json : jsonList) {
                 try {
-                    List<JSONObject> postParams = DataFlowParse.getPostParams(json, dataSource, dataCollection,tableCodes);
+                    List<JSONObject> postParams = DataFlowParse.getPostParams(json, databaseIdNameMap,tableCodes);
                     for (JSONObject postParam : postParams) {
                         String s = HttpPost.doPost(saveMetaRelationsUrl, postParam.toString());
                         logger.info(s);
@@ -131,8 +135,8 @@ public class RestfulApi {
     public String saveRelationFromDataCollection(){
         String result = "{\"returnStatus\": 1, \"returnStatusStr\": \"成功\" }";
         try {
-            if (dataSource == null || dataCollection == null || tableCodes == null)  this.setCode();
-            JSONArray boold = ParamsBoold.getBoold(collectionUrl,tableCodes);
+            if (tableDatabaseIdMap == null || databaseIdNameMap == null || tableCodes == null)  this.setCode();
+            JSONArray boold = ParamsBoold.getBoold(collectionUrl,tableCodes,databaseIdNameMap);
             for (Object o : boold) {
                 logger.info(o.toString());
                 try {
@@ -155,7 +159,7 @@ public class RestfulApi {
 
         String result = "{\"returnStatus\": 1, \"returnStatusStr\": \"成功\" }";
         try {
-            if (dataSource == null || dataCollection == null || tableCodes == null)  this.setCode();
+            if (tableDatabaseIdMap == null || databaseIdNameMap == null || tableCodes == null)  this.setCode();
             List<JSONObject> taskList = UnZipFromPath.unzip(taskFlowUrl);
             List<JSONObject> dataFlowList = UnZipFromPath.unzip(dataFlowUrl);
             for (JSONObject taskJson : taskList) {
